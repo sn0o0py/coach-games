@@ -28,6 +28,14 @@
         letter-spacing: 2px;
         color: #ddd;
     }
+    #player-color {
+        display: none;
+        width: 16px; height: 16px;
+        border-radius: 50%;
+        margin-right: 8px;
+        vertical-align: middle;
+        border: 2px solid rgba(255,255,255,0.3);
+    }
     #status {
         font-size: 14px;
         margin-top: 4px;
@@ -255,7 +263,7 @@
 </div>
 
 <div id="header">
-    <h1>TANK CONTROLLER</h1>
+    <h1><span id="player-color"></span>TANK CONTROLLER</h1>
     <div id="status"><span class="dot connecting"></span> Connecting...</div>
     <div id="scene-label"></div>
     <div id="fs-toggle" title="Toggle fullscreen">⛶</div>
@@ -367,6 +375,27 @@ let currentMode = 'arena'; // 'arena' | 'lobby' | 'menu'
 let ws = null;
 let playerId = null;
 
+// WS player colors (matching game.js)
+const WS_PLAYER_COLORS = [
+    0xFF6B6B, 0x4ECDC4, 0xFFE66D, 0x95E1D3,
+    0xF38181, 0xAA96DA, 0xFCBF49, 0x06FFA5,
+    0xFF8C42, 0x6C5CE7, 0xFDCB6E, 0x00B894,
+    0xD63031, 0x0984E3, 0xFDAC53, 0x6C5B7B,
+    0xE17055, 0x74B9FF, 0xFFBE76, 0x55EFC4
+];
+
+function updatePlayerColor() {
+    if (playerId === null) return;
+    const colorHex = WS_PLAYER_COLORS[parseInt(playerId) % 20];
+    const r = (colorHex >> 16) & 0xFF;
+    const g = (colorHex >> 8) & 0xFF;
+    const b = colorHex & 0xFF;
+    const colorStr = `rgb(${r}, ${g}, ${b})`;
+    const indicator = document.getElementById('player-color');
+    indicator.style.backgroundColor = colorStr;
+    indicator.style.display = 'inline-block';
+}
+
 function connectWS() {
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
     ws = new WebSocket(`${protocol}//${location.host}/ws/controller`);
@@ -379,6 +408,7 @@ function connectWS() {
             if (msg.type === 'id') {
                 playerId = msg.id;
                 updateStatus('connected');
+                updatePlayerColor();
             } else if (msg.type === 'scene') {
                 onSceneChange(msg.scene);
             }
@@ -388,6 +418,8 @@ function connectWS() {
     ws.onclose = () => {
         updateStatus('disconnected');
         playerId = null;
+        const indicator = document.getElementById('player-color');
+        indicator.style.display = 'none';
         setTimeout(connectWS, 2000);
     };
 
