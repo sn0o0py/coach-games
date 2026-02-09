@@ -377,11 +377,26 @@ let playerId = null;
 
 // WS player colors (matching game.js)
 const WS_PLAYER_COLORS = [
-    0xFF6B6B, 0x4ECDC4, 0xFFE66D, 0x95E1D3,
-    0xF38181, 0xAA96DA, 0xFCBF49, 0x06FFA5,
-    0xFF8C42, 0x6C5CE7, 0xFDCB6E, 0x00B894,
-    0xD63031, 0x0984E3, 0xFDAC53, 0x6C5B7B,
-    0xE17055, 0x74B9FF, 0xFFBE76, 0x55EFC4
+    0x00cccc, // teal
+    0xff00ff, // magenta
+    0x00ff88, // spring green
+    0xff6688, // coral pink
+    0x88aaff, // periwinkle
+    0xffaa00, // amber
+    0xaa44ff, // violet
+    0x44ff44, // bright green
+    0xff4488, // hot pink
+    0x00aaff, // sky blue
+    0xffdd44, // gold
+    0x44ffcc, // aquamarine
+    0xff8844, // tangerine
+    0xaa88ff, // lavender
+    0x88ff44, // chartreuse
+    0xcc4444, // scarlet
+    0x44aaff, // cornflower
+    0xcc44ff, // orchid
+    0xff88cc, // pink
+    0x44ffaa  // mint
 ];
 
 function updatePlayerColor() {
@@ -478,7 +493,7 @@ function updateStatus(s) {
         dot.classList.add('connected');
         el.innerHTML = '';
         el.appendChild(dot);
-        el.append(` Connected` + (playerId !== null ? ` (Player ${parseInt(playerId) + 1})` : ''));
+        el.append(` Connected` + (playerId !== null ? ` (WS${playerId})` : ''));
     } else if (s === 'disconnected') {
         dot.classList.remove('connected', 'connecting');
         el.innerHTML = '';
