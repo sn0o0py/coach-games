@@ -124,6 +124,47 @@ let fireActiveTouch = null;
     });
 })();
 
+// ---- Menu Button (Start = buttons[9]) ----
+(function() {
+    const btn = document.getElementById('menu-btn');
+    let activeTouch = null;
+
+    btn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if (activeTouch !== null) return;
+        activeTouch = e.changedTouches[0].identifier;
+        state.buttons[9] = true;
+        btn.style.background = 'rgba(255,255,255,0.2)';
+    }, { passive: false });
+
+    const endMenu = (e) => {
+        for (const touch of e.changedTouches) {
+            if (touch.identifier === activeTouch) {
+                activeTouch = null;
+                state.buttons[9] = false;
+                btn.style.background = '';
+            }
+        }
+    };
+
+    btn.addEventListener('touchend', endMenu);
+    btn.addEventListener('touchcancel', endMenu);
+
+    // Mouse fallback for desktop testing
+    btn.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        state.buttons[9] = true;
+        btn.style.background = 'rgba(255,255,255,0.2)';
+    });
+    window.addEventListener('mouseup', () => {
+        if (state.buttons[9]) {
+            state.buttons[9] = false;
+            const b = document.getElementById('menu-btn');
+            if (b) b.style.background = '';
+        }
+    });
+})();
+
 // ---- Gyro Hit-to-Fire (arena mode only) ----
 (function() {
     const THRESHOLD = 10.5;

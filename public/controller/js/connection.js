@@ -41,9 +41,9 @@ function updatePlayerColor() {
     const g = (colorHex >> 8) & 0xFF;
     const b = colorHex & 0xFF;
     const colorStr = `rgb(${r}, ${g}, ${b})`;
-    const indicator = document.getElementById('player-color');
-    indicator.style.backgroundColor = colorStr;
-    indicator.style.display = 'inline-block';
+    const playerColor = document.getElementById('player-color');
+    playerColor.style.backgroundColor = colorStr;
+    playerColor.style.display = 'inline-block';
 }
 
 function cleanupRtc() {
@@ -172,24 +172,36 @@ function connectWS() {
 
 function onSceneChange(sceneName) {
     const label = document.getElementById('scene-label');
-    if (sceneName === SCENE.TEAM_LOBBY) {
-        setMode(MODE.LOBBY);
-        label.textContent = 'Team Selection';
+    const menuBtn = document.getElementById('menu-btn');
+
+    if (sceneName === 'paused') {
+        setMode(MODE.MENU);
+        label.textContent = 'Paused';
+        menuBtn.classList.remove('hidden');
     } else if (sceneName === SCENE.ARENA) {
         setMode(MODE.ARENA);
         label.textContent = 'In Game';
+        menuBtn.classList.remove('hidden');
     } else if (sceneName === SCENE.MENU) {
         setMode(MODE.MENU);
         label.textContent = 'Main Menu';
+        menuBtn.classList.add('hidden');
     } else if (sceneName === SCENE.WINNER) {
         setMode(MODE.MENU);
         label.textContent = 'Results';
+        menuBtn.classList.add('hidden');
     } else if (sceneName === SCENE.SETTINGS) {
         setMode(MODE.MENU);
         label.textContent = 'Settings';
+        menuBtn.classList.add('hidden');
+    } else if (sceneName === SCENE.TEAM_LOBBY) {
+        setMode(MODE.LOBBY);
+        label.textContent = 'Team Selection';
+        menuBtn.classList.add('hidden');
     } else {
         setMode(MODE.ARENA);
         label.textContent = '';
+        menuBtn.classList.remove('hidden');
     }
 }
 
@@ -212,6 +224,8 @@ function setMode(mode) {
     document.getElementById('mode-arena').classList.toggle('hidden', mode !== MODE.ARENA);
     document.getElementById('mode-lobby').classList.toggle('hidden', mode !== MODE.LOBBY);
     document.getElementById('mode-menu').classList.toggle('hidden', mode !== MODE.MENU);
+
+    // menu-btn visibility is handled per-case in onSceneChange
 }
 
 function updateStatus(s) {

@@ -11,11 +11,19 @@ class InputManager {
         this._connectCbs = [];
         this._disconnectCbs = [];
         this.ws = null;
+        this._useIPC = false;
         this._lastScene = null; // remember last scene for re-send on (re)connect
         this._connectWebSocket();
     }
 
     _connectWebSocket() {
+        // Electron IPC mode – skip WebSocket entirely
+        if (window.electronAPI) {
+            this._useIPC = true;
+            window.electronAPI.onMessage((msg) => this._onMessage(msg));
+            return;
+        }
+
         try {
             const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
             this.ws = new WebSocket(`${protocol}//${location.host}${WS_PATH.GAME}`);
@@ -130,7 +138,9 @@ class InputManager {
     /** Send the current scene name to the server so controllers can adapt their UI. */
     broadcastScene(sceneName) {
         this._lastScene = sceneName;
-        if (this.ws && this.ws.readyState === 1) {
+        if (this._useIPC) {
+            window.electronAPI.send({ type: MSG.SCENE, scene: sceneName });
+        } else if (this.ws && this.ws.readyState === 1) {
             this.ws.send(JSON.stringify({ type: MSG.SCENE, scene: sceneName }));
         }
     }
