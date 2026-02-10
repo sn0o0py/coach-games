@@ -4,12 +4,22 @@ const { WebSocketServer } = require('ws');
 const path = require('path');
 const os = require('os');
 
+let nodeDataChannel = null;
+try {
+    nodeDataChannel = require('node-datachannel');
+} catch (e) {
+    console.warn('node-datachannel not available, WebRTC disabled:', e.message);
+}
+
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 
-// Serve static files from project root
-app.use(express.static(path.join(__dirname)));
+// Root redirect to /game/
+app.get('/', (req, res) => res.redirect('/game/'));
+
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // API: return server's local network IP and port
 app.get('/api/server-info', (req, res) => {
@@ -35,7 +45,7 @@ const gameWss = new WebSocketServer({ noServer: true });
 
 // ----- Controller state storage -----
 let nextControllerId = 0;
-const controllers = new Map(); // id -> { ws, state }
+const controllers = new Map(); // id -> { ws, state, pc, dc, useDataChannel }
 
 server.on('upgrade', (req, socket, head) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
@@ -53,6 +63,69 @@ server.on('upgrade', (req, socket, head) => {
     }
 });
 
+// ----- WebRTC setup for a controller -----
+function setupWebRTC(id) {
+    if (!nodeDataChannel) return;
+
+    const entry = controllers.get(id);
+    if (!entry) return;
+
+    try {
+        const pc = new nodeDataChannel.PeerConnection('controller-' + id, {
+            iceServers: ['stun:stun.l.google.com:19302']
+        });
+
+        entry.pc = pc;
+
+        pc.onStateChange((state) => {
+            if (state === 'failed' || state === 'closed') {
+                entry.useDataChannel = false;
+                entry.dc = null;
+            }
+        });
+
+        pc.onGatheringStateChange(() => {});
+
+        pc.onLocalDescription((sdp, type) => {
+            if (entry.ws.readyState === 1) {
+                entry.ws.send(JSON.stringify({ type: 'rtc-offer', sdp, sdpType: type }));
+            }
+        });
+
+        pc.onLocalCandidate((candidate, mid) => {
+            if (entry.ws.readyState === 1) {
+                entry.ws.send(JSON.stringify({ type: 'rtc-candidate', candidate, mid }));
+            }
+        });
+
+        const dc = pc.createDataChannel('input', {
+            unordered: true,
+            maxRetransmits: 0
+        });
+
+        dc.onOpen(() => {
+            entry.dc = dc;
+            entry.useDataChannel = true;
+            console.log(`Controller ${id}: WebRTC data channel open`);
+        });
+
+        dc.onClosed(() => {
+            entry.useDataChannel = false;
+            entry.dc = null;
+            console.log(`Controller ${id}: WebRTC data channel closed`);
+        });
+
+        dc.onMessage((data) => {
+            try {
+                const msg = JSON.parse(data);
+                if (entry) entry.state = msg;
+            } catch (e) { /* ignore bad data */ }
+        });
+    } catch (e) {
+        console.warn(`Controller ${id}: WebRTC setup failed:`, e.message);
+    }
+}
+
 // ----- /ws/controller  – individual remote controllers -----
 controllerWss.on('connection', (ws) => {
     const id = String(nextControllerId++);
@@ -60,7 +133,7 @@ controllerWss.on('connection', (ws) => {
         axes: [0, 0, 0, 0],
         buttons: new Array(17).fill(false)
     };
-    controllers.set(id, { ws, state: defaultState });
+    controllers.set(id, { ws, state: defaultState, pc: null, dc: null, useDataChannel: false });
 
     // Tell the controller its assigned id
     ws.send(JSON.stringify({ type: 'id', id }));
@@ -73,16 +146,40 @@ controllerWss.on('connection', (ws) => {
     // Notify game frontend(s)
     broadcastToGame({ type: 'ws_connected', id });
 
+    // Initiate WebRTC handshake
+    setupWebRTC(id);
+
     ws.on('message', (raw) => {
         try {
             const msg = JSON.parse(raw);
-            // Expect { axes: [4 floats], buttons: [17 bools] }
-            const entry = controllers.get(id);
-            if (entry) entry.state = msg;
+            if (msg.type === 'rtc-answer') {
+                const entry = controllers.get(id);
+                if (entry && entry.pc) {
+                    entry.pc.setRemoteDescription(msg.sdp, msg.sdpType || 'answer');
+                }
+            } else if (msg.type === 'rtc-candidate') {
+                const entry = controllers.get(id);
+                if (entry && entry.pc) {
+                    entry.pc.addRemoteCandidate(msg.candidate, msg.mid);
+                }
+            } else {
+                // Input state update (axes + buttons)
+                const entry = controllers.get(id);
+                if (entry) entry.state = msg;
+            }
         } catch (e) { /* ignore bad data */ }
     });
 
     ws.on('close', () => {
+        const entry = controllers.get(id);
+        if (entry) {
+            if (entry.dc) {
+                try { entry.dc.close(); } catch (e) {}
+            }
+            if (entry.pc) {
+                try { entry.pc.close(); } catch (e) {}
+            }
+        }
         controllers.delete(id);
         broadcastToGame({ type: 'ws_disconnected', id });
     });
@@ -132,10 +229,9 @@ setInterval(() => {
         obj[id] = ctrl.state;
     }
     broadcastToGame({ type: 'ws_state', controllers: obj });
-}, 16);
+}, 1000 / 60);
 
 // ----- Start -----
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Tank Arena server running on http://0.0.0.0:${PORT}`);
 });
-

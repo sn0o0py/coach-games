@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tank Arena</title>
+    <link rel="icon" href="data:,">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <!-- CDN dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1/qrcode.min.js"></script>
+
+    <!-- Shared constants (provides WS_PLAYER_COLORS) -->
+    <script src="/shared/constants.js"></script>
+
+    <!-- Game settings (provides TANK_SPEED, etc. + saveSettings/loadSettings) -->
+    <script src="js/settings.js"></script>
+
+    <!-- Game-only constants (provides TEAM_COLORS, PLAYER_COLORS, PLAYER_NAMES) -->
+    <script src="js/constants.js"></script>
+
+    <!-- Utility functions (depends on PLAYER_COLORS, WS_PLAYER_COLORS, PLAYER_NAMES) -->
+    <script src="js/utils.js"></script>
+
+    <!-- Input system (VirtualPad has no deps; InputManager depends on VirtualPad) -->
+    <script src="js/VirtualPad.js"></script>
+    <script src="js/InputManager.js"></script>
+
+    <!-- Texture generation (depends on getPlayerColor, darken, TEAM_COLORS) -->
+    <script src="js/textures.js"></script>
+
+    <!-- Scenes (all depend on inputManager + various globals above) -->
+    <script src="js/scenes/MenuScene.js"></script>
+    <script src="js/scenes/TeamLobbyScene.js"></script>
+    <script src="js/scenes/ArenaScene.js"></script>
+    <script src="js/scenes/WinnerScene.js"></script>
+    <script src="js/scenes/SettingsScene.js"></script>
+
+    <!-- Game bootstrap (MUST be last – references all scene classes) -->
+    <script src="js/main.js"></script>
+</body>
+</html>
