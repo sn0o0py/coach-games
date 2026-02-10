@@ -11,6 +11,10 @@
         if (rfs) {
             rfs.call(el).catch(() => {});
         }
+        if (typeof DeviceMotionEvent !== 'undefined' &&
+            typeof DeviceMotionEvent.requestPermission === 'function') {
+            DeviceMotionEvent.requestPermission().catch(() => {});
+        }
         overlay.style.display = 'none';
     });
     // Also hide if already in fullscreen (e.g. PWA / standalone mode)
