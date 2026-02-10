@@ -3,6 +3,7 @@ const http = require('http');
 const { WebSocketServer } = require('ws');
 const path = require('path');
 const os = require('os');
+const { MSG, SCENE, WS_PATH } = require('../public/shared/constants');
 
 let nodeDataChannel = null;
 try {
@@ -50,11 +51,11 @@ const controllers = new Map(); // id -> { ws, state, pc, dc, useDataChannel }
 server.on('upgrade', (req, socket, head) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
 
-    if (url.pathname === '/ws/controller') {
+    if (url.pathname === WS_PATH.CONTROLLER) {
         controllerWss.handleUpgrade(req, socket, head, (ws) => {
             controllerWss.emit('connection', ws, req);
         });
-    } else if (url.pathname === '/ws/game') {
+    } else if (url.pathname === WS_PATH.GAME) {
         gameWss.handleUpgrade(req, socket, head, (ws) => {
             gameWss.emit('connection', ws, req);
         });
@@ -88,13 +89,13 @@ function setupWebRTC(id) {
 
         pc.onLocalDescription((sdp, type) => {
             if (entry.ws.readyState === 1) {
-                entry.ws.send(JSON.stringify({ type: 'rtc-offer', sdp, sdpType: type }));
+                entry.ws.send(JSON.stringify({ type: MSG.RTC_OFFER, sdp, sdpType: type }));
             }
         });
 
         pc.onLocalCandidate((candidate, mid) => {
             if (entry.ws.readyState === 1) {
-                entry.ws.send(JSON.stringify({ type: 'rtc-candidate', candidate, mid }));
+                entry.ws.send(JSON.stringify({ type: MSG.RTC_CANDIDATE, candidate, mid }));
             }
         });
 
@@ -136,15 +137,15 @@ controllerWss.on('connection', (ws) => {
     controllers.set(id, { ws, state: defaultState, pc: null, dc: null, useDataChannel: false });
 
     // Tell the controller its assigned id
-    ws.send(JSON.stringify({ type: 'id', id }));
+    ws.send(JSON.stringify({ type: MSG.ID, id }));
 
     // Send current scene so the controller can adopt the right UI immediately
     if (currentScene) {
-        ws.send(JSON.stringify({ type: 'scene', scene: currentScene }));
+        ws.send(JSON.stringify({ type: MSG.SCENE, scene: currentScene }));
     }
 
     // Notify game frontend(s)
-    broadcastToGame({ type: 'ws_connected', id });
+    broadcastToGame({ type: MSG.WS_CONNECTED, id });
 
     // Initiate WebRTC handshake
     setupWebRTC(id);
@@ -152,12 +153,12 @@ controllerWss.on('connection', (ws) => {
     ws.on('message', (raw) => {
         try {
             const msg = JSON.parse(raw);
-            if (msg.type === 'rtc-answer') {
+            if (msg.type === MSG.RTC_ANSWER) {
                 const entry = controllers.get(id);
                 if (entry && entry.pc) {
                     entry.pc.setRemoteDescription(msg.sdp, msg.sdpType || 'answer');
                 }
-            } else if (msg.type === 'rtc-candidate') {
+            } else if (msg.type === MSG.RTC_CANDIDATE) {
                 const entry = controllers.get(id);
                 if (entry && entry.pc) {
                     entry.pc.addRemoteCandidate(msg.candidate, msg.mid);
@@ -181,7 +182,7 @@ controllerWss.on('connection', (ws) => {
             }
         }
         controllers.delete(id);
-        broadcastToGame({ type: 'ws_disconnected', id });
+        broadcastToGame({ type: MSG.WS_DISCONNECTED, id });
     });
 });
 
@@ -191,14 +192,14 @@ let currentScene = null; // track latest scene so new controllers get it
 gameWss.on('connection', (ws) => {
     // Send current set of connected controllers so the game can catch up
     for (const [id] of controllers) {
-        ws.send(JSON.stringify({ type: 'ws_connected', id }));
+        ws.send(JSON.stringify({ type: MSG.WS_CONNECTED, id }));
     }
 
     // Listen for messages from the game (e.g. scene changes)
     ws.on('message', (raw) => {
         try {
             const msg = JSON.parse(raw);
-            if (msg.type === 'scene') {
+            if (msg.type === MSG.SCENE) {
                 currentScene = msg.scene;
                 broadcastToControllers(msg);
             }
@@ -228,8 +229,8 @@ setInterval(() => {
     for (const [id, ctrl] of controllers) {
         obj[id] = ctrl.state;
     }
-    broadcastToGame({ type: 'ws_state', controllers: obj });
-}, 1000 / 60);
+    broadcastToGame({ type: MSG.WS_STATE, controllers: obj });
+}, 1000 / 120);
 
 // ----- Start -----
 server.listen(PORT, '0.0.0.0', () => {

@@ -4,7 +4,7 @@
 
 class WinnerScene extends Phaser.Scene {
     constructor() {
-        super({ key: 'WinnerScene' });
+        super({ key: SCENE.WINNER });
     }
 
     init(data) {
@@ -13,7 +13,7 @@ class WinnerScene extends Phaser.Scene {
 
     create() {
         inputManager.setPhaserGamepad(this.input.gamepad);
-        inputManager.broadcastScene('WinnerScene');
+        inputManager.broadcastScene(SCENE.WINNER);
         const d = this.resultData;
         const w = this.scale.width;
         const h = this.scale.height;
@@ -126,6 +126,6 @@ class WinnerScene extends Phaser.Scene {
     returnToMenu() {
         if (this._returned) return;
         this._returned = true;
-        this.scene.start('MenuScene');
+        this.scene.start(SCENE.MENU);
     }
 }

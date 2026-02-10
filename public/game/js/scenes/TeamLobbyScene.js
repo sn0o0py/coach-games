@@ -4,7 +4,7 @@
 
 class TeamLobbyScene extends Phaser.Scene {
     constructor() {
-        super({ key: 'TeamLobbyScene' });
+        super({ key: SCENE.TEAM_LOBBY });
     }
 
     init(data) {
@@ -14,7 +14,7 @@ class TeamLobbyScene extends Phaser.Scene {
 
     create() {
         inputManager.setPhaserGamepad(this.input.gamepad);
-        inputManager.broadcastScene('TeamLobbyScene');
+        inputManager.broadcastScene(SCENE.TEAM_LOBBY);
         const w = this.scale.width;
         const h = this.scale.height;
         const cx = w / 2;
@@ -203,6 +203,6 @@ class TeamLobbyScene extends Phaser.Scene {
             teams[p.padIndex] = p.team;
             padIndices.push(p.padIndex);
         }
-        this.scene.start('ArenaScene', { mode: this.nextMode, padIndices, teams });
+        this.scene.start(SCENE.ARENA, { mode: this.nextMode, padIndices, teams });
     }
 }

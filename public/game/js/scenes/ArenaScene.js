@@ -4,7 +4,7 @@
 
 class ArenaScene extends Phaser.Scene {
     constructor() {
-        super({ key: 'ArenaScene' });
+        super({ key: SCENE.ARENA });
     }
 
     init(data) {
@@ -19,7 +19,7 @@ class ArenaScene extends Phaser.Scene {
 
     create() {
         inputManager.setPhaserGamepad(this.input.gamepad);
-        inputManager.broadcastScene('ArenaScene');
+        inputManager.broadcastScene(SCENE.ARENA);
         // Reset state
         this.tanks = [];
         this.scores = {};           // { playerIndex: score }
@@ -169,8 +169,7 @@ class ArenaScene extends Phaser.Scene {
         let col = 0;
         for (const idx of this.padIndices) {
             const x = 20 + col * 160;
-            const isTeamMode = (this.mode === 'tdm' || this.mode === 'zone') && this.teams[idx];
-            const swatchColor = isTeamMode ? TEAM_COLORS[this.teams[idx]] : getPlayerColor(idx);
+            const swatchColor =  getPlayerColor(idx);
             const sw = this.add.graphics().setDepth(200);
             sw.fillStyle(swatchColor, 1);
             sw.fillRoundedRect(x, y, 20, 20, 4);
@@ -491,7 +490,7 @@ class ArenaScene extends Phaser.Scene {
 
         // Transition to WinnerScene after a brief pause
         this.time.delayedCall(1500, () => {
-            this.scene.start('WinnerScene', {
+            this.scene.start(SCENE.WINNER, {
                 mode: this.mode,
                 scores: { ...this.scores },
                 teams: { ...this.teams },

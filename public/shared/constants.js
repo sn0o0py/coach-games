@@ -2,6 +2,33 @@
 // Shared Constants – Used by both game and controller
 // ============================================================
 
+// Message types exchanged over WebSocket
+const MSG = {
+    ID:              'id',
+    SCENE:           'scene',
+    RTC_OFFER:       'rtc-offer',
+    RTC_ANSWER:      'rtc-answer',
+    RTC_CANDIDATE:   'rtc-candidate',
+    WS_CONNECTED:    'ws_connected',
+    WS_DISCONNECTED: 'ws_disconnected',
+    WS_STATE:        'ws_state',
+};
+
+// Scene names
+const SCENE = {
+    ARENA:      'ArenaScene',
+    MENU:       'MenuScene',
+    TEAM_LOBBY: 'TeamLobbyScene',
+    WINNER:     'WinnerScene',
+    SETTINGS:   'SettingsScene',
+};
+
+// WebSocket endpoint paths
+const WS_PATH = {
+    CONTROLLER: '/ws/controller',
+    GAME:       '/ws/game',
+};
+
 // 20 distinct colours for WebSocket players (indices 100-119)
 const WS_PLAYER_COLORS = [
     0x00cccc, // teal
@@ -25,3 +52,8 @@ const WS_PLAYER_COLORS = [
     0xff88cc, // pink
     0x44ffaa  // mint
 ];
+
+// Node.js compatibility
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { MSG, SCENE, WS_PATH, WS_PLAYER_COLORS };
+}

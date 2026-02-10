@@ -4,12 +4,12 @@
 
 class SettingsScene extends Phaser.Scene {
     constructor() {
-        super({ key: 'SettingsScene' });
+        super({ key: SCENE.SETTINGS });
     }
 
     create() {
         inputManager.setPhaserGamepad(this.input.gamepad);
-        inputManager.broadcastScene('SettingsScene');
+        inputManager.broadcastScene(SCENE.SETTINGS);
         const w = this.scale.width;
         const h = this.scale.height;
 
@@ -236,7 +236,7 @@ class SettingsScene extends Phaser.Scene {
             const aBtn = pad.buttons[0] ? pad.buttons[0].pressed : false;
             if (aBtn && !state.prevA) {
                 if (this.selectedIndex === this.sliders.length) {
-                    this.scene.start('MenuScene');
+                    this.scene.start(SCENE.MENU);
                     return; // Scene transitioning, exit immediately
                 }
             }

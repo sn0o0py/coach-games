@@ -8,7 +8,20 @@ const state = {
     buttons: new Array(17).fill(false)
 };
 
-let currentMode = 'arena'; // 'arena' | 'lobby' | 'menu'
+// Controller-specific enums
+const STATUS = {
+    CONNECTED:     'connected',
+    CONNECTED_RTC: 'connected-rtc',
+    DISCONNECTED:  'disconnected',
+};
+
+const MODE = {
+    ARENA: 'arena',
+    LOBBY: 'lobby',
+    MENU:  'menu',
+};
+
+let currentMode = MODE.ARENA;
 
 // ---- WebSocket ----
 let ws = null;
@@ -48,7 +61,7 @@ function cleanupRtc() {
     }
     if (rtcReady) {
         rtcReady = false;
-        updateStatus('connected');
+        updateStatus(STATUS.CONNECTED);
     }
 }
 
@@ -63,7 +76,7 @@ async function handleRtcOffer(sdp, sdpType) {
         rtcPc.onicecandidate = (e) => {
             if (e.candidate && ws && ws.readyState === 1) {
                 ws.send(JSON.stringify({
-                    type: 'rtc-candidate',
+                    type: MSG.RTC_CANDIDATE,
                     candidate: e.candidate.candidate,
                     mid: e.candidate.sdpMid
                 }));
@@ -74,17 +87,17 @@ async function handleRtcOffer(sdp, sdpType) {
             rtcDc = e.channel;
             rtcDc.onopen = () => {
                 rtcReady = true;
-                updateStatus('connected-rtc');
+                updateStatus(STATUS.CONNECTED_RTC);
             };
             rtcDc.onclose = () => {
                 rtcReady = false;
                 rtcDc = null;
-                updateStatus('connected');
+                updateStatus(STATUS.CONNECTED);
             };
             rtcDc.onerror = () => {
                 rtcReady = false;
                 rtcDc = null;
-                updateStatus('connected');
+                updateStatus(STATUS.CONNECTED);
             };
         };
 
@@ -101,7 +114,7 @@ async function handleRtcOffer(sdp, sdpType) {
 
         if (ws && ws.readyState === 1) {
             ws.send(JSON.stringify({
-                type: 'rtc-answer',
+                type: MSG.RTC_ANSWER,
                 sdp: answer.sdp,
                 sdpType: answer.type
             }));
@@ -121,22 +134,22 @@ async function handleRtcOffer(sdp, sdpType) {
 
 function connectWS() {
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    ws = new WebSocket(`${protocol}//${location.host}/ws/controller`);
+    ws = new WebSocket(`${protocol}//${location.host}${WS_PATH.CONTROLLER}`);
 
-    ws.onopen = () => updateStatus('connected');
+    ws.onopen = () => updateStatus(STATUS.CONNECTED);
 
     ws.onmessage = (e) => {
         try {
             const msg = JSON.parse(e.data);
-            if (msg.type === 'id') {
+            if (msg.type === MSG.ID) {
                 playerId = msg.id;
-                updateStatus('connected');
+                updateStatus(STATUS.CONNECTED);
                 updatePlayerColor();
-            } else if (msg.type === 'scene') {
+            } else if (msg.type === MSG.SCENE) {
                 onSceneChange(msg.scene);
-            } else if (msg.type === 'rtc-offer') {
+            } else if (msg.type === MSG.RTC_OFFER) {
                 handleRtcOffer(msg.sdp, msg.sdpType);
-            } else if (msg.type === 'rtc-candidate') {
+            } else if (msg.type === MSG.RTC_CANDIDATE) {
                 if (rtcPc) {
                     rtcPc.addIceCandidate({ candidate: msg.candidate, sdpMid: msg.mid })
                         .catch(() => {});
@@ -147,7 +160,7 @@ function connectWS() {
 
     ws.onclose = () => {
         cleanupRtc();
-        updateStatus('disconnected');
+        updateStatus(STATUS.DISCONNECTED);
         playerId = null;
         const indicator = document.getElementById('player-color');
         indicator.style.display = 'none';
@@ -159,23 +172,23 @@ function connectWS() {
 
 function onSceneChange(sceneName) {
     const label = document.getElementById('scene-label');
-    if (sceneName === 'TeamLobbyScene') {
-        setMode('lobby');
+    if (sceneName === SCENE.TEAM_LOBBY) {
+        setMode(MODE.LOBBY);
         label.textContent = 'Team Selection';
-    } else if (sceneName === 'ArenaScene') {
-        setMode('arena');
+    } else if (sceneName === SCENE.ARENA) {
+        setMode(MODE.ARENA);
         label.textContent = 'In Game';
-    } else if (sceneName === 'MenuScene') {
-        setMode('menu');
+    } else if (sceneName === SCENE.MENU) {
+        setMode(MODE.MENU);
         label.textContent = 'Main Menu';
-    } else if (sceneName === 'WinnerScene') {
-        setMode('menu');
+    } else if (sceneName === SCENE.WINNER) {
+        setMode(MODE.MENU);
         label.textContent = 'Results';
-    } else if (sceneName === 'SettingsScene') {
-        setMode('menu');
+    } else if (sceneName === SCENE.SETTINGS) {
+        setMode(MODE.MENU);
         label.textContent = 'Settings';
     } else {
-        setMode('arena');
+        setMode(MODE.ARENA);
         label.textContent = '';
     }
 }
@@ -196,26 +209,26 @@ function setMode(mode) {
     }
 
     // Show/hide mode panels
-    document.getElementById('mode-arena').classList.toggle('hidden', mode !== 'arena');
-    document.getElementById('mode-lobby').classList.toggle('hidden', mode !== 'lobby');
-    document.getElementById('mode-menu').classList.toggle('hidden', mode !== 'menu');
+    document.getElementById('mode-arena').classList.toggle('hidden', mode !== MODE.ARENA);
+    document.getElementById('mode-lobby').classList.toggle('hidden', mode !== MODE.LOBBY);
+    document.getElementById('mode-menu').classList.toggle('hidden', mode !== MODE.MENU);
 }
 
 function updateStatus(s) {
     const el = document.getElementById('status');
     const dot = el.querySelector('.dot');
     dot.className = 'dot';
-    if (s === 'connected-rtc') {
+    if (s === STATUS.CONNECTED_RTC) {
         dot.classList.add('connected');
         el.innerHTML = '';
         el.appendChild(dot);
         el.append(` Connected` + (playerId !== null ? ` (RTC${playerId})` : ''));
-    } else if (s === 'connected') {
+    } else if (s === STATUS.CONNECTED) {
         dot.classList.add('connected');
         el.innerHTML = '';
         el.appendChild(dot);
         el.append(` Connected` + (playerId !== null ? ` (WS${playerId})` : ''));
-    } else if (s === 'disconnected') {
+    } else if (s === STATUS.DISCONNECTED) {
         dot.classList.remove('connected', 'connecting');
         el.innerHTML = '';
         el.appendChild(dot);

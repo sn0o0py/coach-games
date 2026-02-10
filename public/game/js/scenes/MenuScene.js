@@ -4,7 +4,7 @@
 
 class MenuScene extends Phaser.Scene {
     constructor() {
-        super({ key: 'MenuScene' });
+        super({ key: SCENE.MENU });
     }
 
     preload() {
@@ -13,7 +13,7 @@ class MenuScene extends Phaser.Scene {
 
     create() {
         inputManager.setPhaserGamepad(this.input.gamepad);
-        inputManager.broadcastScene('MenuScene');
+        inputManager.broadcastScene(SCENE.MENU);
 
         const w = this.scale.width;
         const h = this.scale.height;
@@ -212,7 +212,7 @@ class MenuScene extends Phaser.Scene {
     confirmSelection() {
         if (this.selectedIndex === 3) {
             // Settings – no controller requirement
-            this.scene.start('SettingsScene');
+            this.scene.start(SCENE.SETTINGS);
             return;
         }
 
@@ -229,13 +229,13 @@ class MenuScene extends Phaser.Scene {
 
         if (this.selectedIndex === 0) {
             // Free For All – go straight to arena
-            this.scene.start('ArenaScene', { mode: 'ffa', padIndices, teams: {} });
+            this.scene.start(SCENE.ARENA, { mode: 'ffa', padIndices, teams: {} });
         } else if (this.selectedIndex === 1) {
             // Team Deathmatch – go to team lobby
-            this.scene.start('TeamLobbyScene', { padIndices, nextMode: 'tdm' });
+            this.scene.start(SCENE.TEAM_LOBBY, { padIndices, nextMode: 'tdm' });
         } else if (this.selectedIndex === 2) {
             // Zone Capture – go to team lobby
-            this.scene.start('TeamLobbyScene', { padIndices, nextMode: 'zone' });
+            this.scene.start(SCENE.TEAM_LOBBY, { padIndices, nextMode: 'zone' });
         }
     }
 }

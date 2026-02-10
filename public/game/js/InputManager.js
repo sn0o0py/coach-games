@@ -18,11 +18,11 @@ class InputManager {
     _connectWebSocket() {
         try {
             const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            this.ws = new WebSocket(`${protocol}//${location.host}/ws/game`);
+            this.ws = new WebSocket(`${protocol}//${location.host}${WS_PATH.GAME}`);
             this.ws.onopen = () => {
                 // Re-send the current scene so controllers catch up after (re)connect
                 if (this._lastScene) {
-                    this.ws.send(JSON.stringify({ type: 'scene', scene: this._lastScene }));
+                    this.ws.send(JSON.stringify({ type: MSG.SCENE, scene: this._lastScene }));
                 }
             };
             this.ws.onmessage = (e) => this._onMessage(JSON.parse(e.data));
@@ -37,16 +37,16 @@ class InputManager {
     }
 
     _onMessage(msg) {
-        if (msg.type === 'ws_state') {
+        if (msg.type === MSG.WS_STATE) {
             for (const [id, state] of Object.entries(msg.controllers)) {
                 // Auto-create pad if we see it in a state broadcast but haven't assigned yet
                 if (!this.wsPads[id]) this._assignWsController(id);
                 const vpad = this.wsPads[id];
                 if (vpad) vpad.updateState(state.axes, state.buttons);
             }
-        } else if (msg.type === 'ws_connected') {
+        } else if (msg.type === MSG.WS_CONNECTED) {
             this._assignWsController(msg.id);
-        } else if (msg.type === 'ws_disconnected') {
+        } else if (msg.type === MSG.WS_DISCONNECTED) {
             this._removeWsController(msg.id);
         }
     }
@@ -131,7 +131,7 @@ class InputManager {
     broadcastScene(sceneName) {
         this._lastScene = sceneName;
         if (this.ws && this.ws.readyState === 1) {
-            this.ws.send(JSON.stringify({ type: 'scene', scene: sceneName }));
+            this.ws.send(JSON.stringify({ type: MSG.SCENE, scene: sceneName }));
         }
     }
 
