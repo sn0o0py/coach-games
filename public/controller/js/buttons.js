@@ -2,18 +2,21 @@
 // Action Buttons (Fire, Ready, Select)
 // ============================================================
 
-// ---- Fire Button (RT = buttons[7]) ----
+import { state, MODE, currentMode } from './connection.js';
+
+// Shared state for fire button
 let fireActiveTouch = null;
 
-(function() {
-    const btn = document.getElementById('fire-btn');
+export function initButtons() {
+    // ---- Fire Button (RT = buttons[7]) ----
+    const fireBtn = document.getElementById('fire-btn');
 
-    btn.addEventListener('touchstart', (e) => {
+    fireBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         if (fireActiveTouch !== null) return;
         fireActiveTouch = e.changedTouches[0].identifier;
         state.buttons[7] = true;
-        btn.classList.add('pressed');
+        fireBtn.classList.add('pressed');
     }, { passive: false });
 
     const endFire = (e) => {
@@ -21,152 +24,142 @@ let fireActiveTouch = null;
             if (touch.identifier === fireActiveTouch) {
                 fireActiveTouch = null;
                 state.buttons[7] = false;
-                btn.classList.remove('pressed');
+                fireBtn.classList.remove('pressed');
             }
         }
     };
 
-    btn.addEventListener('touchend', endFire);
-    btn.addEventListener('touchcancel', endFire);
+    fireBtn.addEventListener('touchend', endFire);
+    fireBtn.addEventListener('touchcancel', endFire);
 
     // Mouse fallback for desktop testing
-    btn.addEventListener('mousedown', (e) => {
+    fireBtn.addEventListener('mousedown', (e) => {
         e.preventDefault();
         state.buttons[7] = true;
-        btn.classList.add('pressed');
+        fireBtn.classList.add('pressed');
     });
     window.addEventListener('mouseup', () => {
         if (state.buttons[7]) {
             state.buttons[7] = false;
-            btn.classList.remove('pressed');
+            fireBtn.classList.remove('pressed');
         }
     });
-})();
 
-// ---- Ready Button (A = buttons[0], press-and-release to toggle) ----
-(function() {
-    const btn = document.getElementById('ready-btn');
-    let activeTouch = null;
+    // ---- Ready Button (A = buttons[0], press-and-release to toggle) ----
+    const readyBtn = document.getElementById('ready-btn');
+    let readyActiveTouch = null;
 
-    btn.addEventListener('touchstart', (e) => {
+    readyBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        if (activeTouch !== null) return;
-        activeTouch = e.changedTouches[0].identifier;
+        if (readyActiveTouch !== null) return;
+        readyActiveTouch = e.changedTouches[0].identifier;
         state.buttons[0] = true;
-        btn.classList.add('pressed');
+        readyBtn.classList.add('pressed');
     }, { passive: false });
 
     const endReady = (e) => {
         for (const touch of e.changedTouches) {
-            if (touch.identifier === activeTouch) {
-                activeTouch = null;
+            if (touch.identifier === readyActiveTouch) {
+                readyActiveTouch = null;
                 state.buttons[0] = false;
-                btn.classList.remove('pressed');
+                readyBtn.classList.remove('pressed');
             }
         }
     };
 
-    btn.addEventListener('touchend', endReady);
-    btn.addEventListener('touchcancel', endReady);
+    readyBtn.addEventListener('touchend', endReady);
+    readyBtn.addEventListener('touchcancel', endReady);
 
     // Mouse fallback for desktop testing
-    btn.addEventListener('mousedown', (e) => {
+    readyBtn.addEventListener('mousedown', (e) => {
         e.preventDefault();
         state.buttons[0] = true;
-        btn.classList.add('pressed');
+        readyBtn.classList.add('pressed');
     });
     window.addEventListener('mouseup', () => {
         if (currentMode === 'lobby' && state.buttons[0]) {
             state.buttons[0] = false;
-            btn.classList.remove('pressed');
+            readyBtn.classList.remove('pressed');
         }
     });
-})();
 
-// ---- Select Button (menu mode, A = buttons[0]) ----
-(function() {
-    const btn = document.getElementById('select-btn');
-    let activeTouch = null;
+    // ---- Select Button (menu mode, A = buttons[0]) ----
+    const selectBtn = document.getElementById('select-btn');
+    let selectActiveTouch = null;
 
-    btn.addEventListener('touchstart', (e) => {
+    selectBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        if (activeTouch !== null) return;
-        activeTouch = e.changedTouches[0].identifier;
+        if (selectActiveTouch !== null) return;
+        selectActiveTouch = e.changedTouches[0].identifier;
         state.buttons[0] = true;
-        btn.classList.add('pressed');
+        selectBtn.classList.add('pressed');
     }, { passive: false });
 
     const endSelect = (e) => {
         for (const touch of e.changedTouches) {
-            if (touch.identifier === activeTouch) {
-                activeTouch = null;
+            if (touch.identifier === selectActiveTouch) {
+                selectActiveTouch = null;
                 state.buttons[0] = false;
-                btn.classList.remove('pressed');
+                selectBtn.classList.remove('pressed');
             }
         }
     };
 
-    btn.addEventListener('touchend', endSelect);
-    btn.addEventListener('touchcancel', endSelect);
+    selectBtn.addEventListener('touchend', endSelect);
+    selectBtn.addEventListener('touchcancel', endSelect);
 
     // Mouse fallback for desktop testing
-    btn.addEventListener('mousedown', (e) => {
+    selectBtn.addEventListener('mousedown', (e) => {
         e.preventDefault();
         state.buttons[0] = true;
-        btn.classList.add('pressed');
+        selectBtn.classList.add('pressed');
     });
     window.addEventListener('mouseup', () => {
         if (currentMode === 'menu' && state.buttons[0]) {
             state.buttons[0] = false;
-            const b = document.getElementById('select-btn');
-            if (b) b.classList.remove('pressed');
+            selectBtn.classList.remove('pressed');
         }
     });
-})();
 
-// ---- Menu Button (Start = buttons[9]) ----
-(function() {
-    const btn = document.getElementById('menu-btn');
-    let activeTouch = null;
+    // ---- Menu Button (Start = buttons[9]) ----
+    const menuBtn = document.getElementById('menu-btn');
+    let menuActiveTouch = null;
 
-    btn.addEventListener('touchstart', (e) => {
+    menuBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        if (activeTouch !== null) return;
-        activeTouch = e.changedTouches[0].identifier;
+        if (menuActiveTouch !== null) return;
+        menuActiveTouch = e.changedTouches[0].identifier;
         state.buttons[9] = true;
-        btn.style.background = 'rgba(255,255,255,0.2)';
+        menuBtn.style.background = 'rgba(255,255,255,0.2)';
     }, { passive: false });
 
     const endMenu = (e) => {
         for (const touch of e.changedTouches) {
-            if (touch.identifier === activeTouch) {
-                activeTouch = null;
+            if (touch.identifier === menuActiveTouch) {
+                menuActiveTouch = null;
                 state.buttons[9] = false;
-                btn.style.background = '';
+                menuBtn.style.background = '';
             }
         }
     };
 
-    btn.addEventListener('touchend', endMenu);
-    btn.addEventListener('touchcancel', endMenu);
+    menuBtn.addEventListener('touchend', endMenu);
+    menuBtn.addEventListener('touchcancel', endMenu);
 
     // Mouse fallback for desktop testing
-    btn.addEventListener('mousedown', (e) => {
+    menuBtn.addEventListener('mousedown', (e) => {
         e.preventDefault();
         state.buttons[9] = true;
-        btn.style.background = 'rgba(255,255,255,0.2)';
+        menuBtn.style.background = 'rgba(255,255,255,0.2)';
     });
     window.addEventListener('mouseup', () => {
         if (state.buttons[9]) {
             state.buttons[9] = false;
-            const b = document.getElementById('menu-btn');
-            if (b) b.style.background = '';
+            menuBtn.style.background = '';
         }
     });
-})();
 
-// ---- Gyro Hit-to-Fire (arena mode only) ----
-(function() {
+    // ---- Gyro Hit-to-Fire (arena mode only) ----
     const THRESHOLD = 10.5;
     const COOLDOWN = 50;
     const FIRE_DURATION = 50;
@@ -189,15 +182,14 @@ let fireActiveTouch = null;
 
         lastFireTime = now;
         state.buttons[7] = true;
-        const btn = document.getElementById('fire-btn');
-        btn.classList.add('pressed');
+        fireBtn.classList.add('pressed');
 
         gyroFireTimeout = setTimeout(() => {
             gyroFireTimeout = null;
             if (fireActiveTouch === null) {
                 state.buttons[7] = false;
-                btn.classList.remove('pressed');
+                fireBtn.classList.remove('pressed');
             }
         }, FIRE_DURATION);
     });
-})();
+}

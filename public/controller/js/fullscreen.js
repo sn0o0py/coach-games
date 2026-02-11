@@ -2,8 +2,8 @@
 // Fullscreen Prompt and Toggle
 // ============================================================
 
-// ---- Fullscreen prompt ----
-(function() {
+export function initFullscreen() {
+    // ---- Fullscreen prompt ----
     const overlay = document.getElementById('fullscreen-prompt');
     overlay.addEventListener('click', () => {
         const el = document.documentElement;
@@ -23,10 +23,8 @@
         window.navigator.standalone) {
         overlay.style.display = 'none';
     }
-})();
 
-// ---- Fullscreen toggle button ----
-(function() {
+    // ---- Fullscreen toggle button ----
     const btn = document.getElementById('fs-toggle');
 
     function updateIcon() {
@@ -48,4 +46,4 @@
     document.addEventListener('fullscreenchange', updateIcon);
     document.addEventListener('webkitfullscreenchange', updateIcon);
     updateIcon();
-})();
+}

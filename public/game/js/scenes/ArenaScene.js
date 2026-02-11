@@ -2,6 +2,13 @@
 // ArenaScene – Main Gameplay
 // ============================================================
 
+import { SCENE } from '../../../shared/constants.js';
+import { generateAllTextures } from '../textures.js';
+import { inputManager } from '../InputManager.js';
+import { settings } from '../settings.js';
+import { getPlayerColor, getPlayerName, hexStr } from '../utils.js';
+import { TEAM_COLORS } from '../constants.js';
+
 class ArenaScene extends Phaser.Scene {
     constructor() {
         super({ key: SCENE.ARENA });
@@ -99,9 +106,9 @@ class ArenaScene extends Phaser.Scene {
         const h = this.scale.height;
         const margin = 80;
 
-        for (let i = 0; i < WALL_COUNT; i++) {
-            const ww = Phaser.Math.Between(WALL_MIN, WALL_MAX);
-            const wh = Phaser.Math.Between(WALL_MIN / 2, WALL_MAX / 2);
+        for (let i = 0; i < settings.WALL_COUNT; i++) {
+            const ww = Phaser.Math.Between(settings.WALL_MIN, settings.WALL_MAX);
+            const wh = Phaser.Math.Between(settings.WALL_MIN / 2, settings.WALL_MAX / 2);
             const wx = Phaser.Math.Between(margin, w - margin - ww);
             const wy = Phaser.Math.Between(margin + 50, h - margin - wh);
 
@@ -131,10 +138,10 @@ class ArenaScene extends Phaser.Scene {
         let modeLabel, targetText;
         if (this.mode === 'ffa') {
             modeLabel = 'FREE FOR ALL';
-            targetText = 'First to ' + FFA_KILL_TARGET + ' kills';
+            targetText = 'First to ' + settings.FFA_KILL_TARGET + ' kills';
         } else if (this.mode === 'tdm') {
             modeLabel = 'TEAM DEATHMATCH';
-            targetText = 'First to ' + TDM_KILL_TARGET + ' kills';
+            targetText = 'First to ' + settings.TDM_KILL_TARGET + ' kills';
         } else {
             modeLabel = 'ZONE CAPTURE';
             targetText = 'First to ' + ZONE_CAPTURE_TARGET + ' captures';
@@ -297,7 +304,7 @@ class ArenaScene extends Phaser.Scene {
             turret,
             reloadGfx,
             alive: true,
-            lastFireTime: -RELOAD_TIME,
+            lastFireTime: -settings.RELOAD_TIME,
             turretAngle: 0,
             invincible: false,
             invincibleUntil: 0,
@@ -353,7 +360,7 @@ class ArenaScene extends Phaser.Scene {
     // --------------------------------------------------------
     setInvincible(tank) {
         tank.invincible = true;
-        tank.invincibleUntil = this.time.now + INVINCIBILITY_TIME;
+        tank.invincibleUntil = this.time.now + settings.INVINCIBILITY_TIME;
 
         if (tank._blinkTween) tank._blinkTween.remove();
         tank._blinkTween = this.tweens.add({
@@ -361,7 +368,7 @@ class ArenaScene extends Phaser.Scene {
             alpha: { from: 1, to: 0.25 },
             duration: 150,
             yoyo: true,
-            repeat: Math.ceil(INVINCIBILITY_TIME / 300),
+            repeat: Math.ceil(settings.INVINCIBILITY_TIME / 300),
             onComplete: () => {
                 if (tank.body && tank.body.active) {
                     tank.body.setAlpha(1);
@@ -377,7 +384,7 @@ class ArenaScene extends Phaser.Scene {
     fireBullet(tank) {
         if (this.gameOver) return;
         const now = this.time.now;
-        if (now - tank.lastFireTime < RELOAD_TIME) return;
+        if (now - tank.lastFireTime < settings.RELOAD_TIME) return;
         tank.lastFireTime = now;
 
         const angle = tank.turretAngle;
@@ -392,7 +399,7 @@ class ArenaScene extends Phaser.Scene {
         this.bullets.add(bullet);
 
         bullet.body.setCircle(4);
-        this.physics.velocityFromRotation(angle, BULLET_SPEED, bullet.body.velocity);
+        this.physics.velocityFromRotation(angle, settings.BULLET_SPEED, bullet.body.velocity);
 
         // Bullet <-> wall
         this.physics.add.collider(bullet, this.walls, (b) => b.destroy());
@@ -452,18 +459,18 @@ class ArenaScene extends Phaser.Scene {
 
         if (this.mode === 'ffa') {
             for (const idx of this.padIndices) {
-                if ((this.scores[idx] || 0) >= FFA_KILL_TARGET) {
+                if ((this.scores[idx] || 0) >= settings.FFA_KILL_TARGET) {
                     this.triggerWin({ winnerIndex: idx });
                     return;
                 }
             }
         } else if (this.mode === 'tdm') {
             const ts = this.getTeamScores();
-            if (ts.A >= TDM_KILL_TARGET) {
+            if (ts.A >= settings.TDM_KILL_TARGET) {
                 this.triggerWin({ winningTeam: 'A', teamScores: { ...ts } });
                 return;
             }
-            if (ts.B >= TDM_KILL_TARGET) {
+            if (ts.B >= settings.TDM_KILL_TARGET) {
                 this.triggerWin({ winningTeam: 'B', teamScores: { ...ts } });
                 return;
             }
@@ -548,7 +555,7 @@ class ArenaScene extends Phaser.Scene {
         const spawnPos = this.findSpawnPosition();
 
         // Ghost preview in last 1 second of respawn delay
-        this.time.delayedCall(RESPAWN_DELAY - 1000, () => {
+        this.time.delayedCall(settings.RESPAWN_DELAY - 1000, () => {
             if (!this.tanks.includes(tank) || this.gameOver) return;
             const isTeamMode = (this.mode === 'tdm' || this.mode === 'zone') && tank.team;
             const ghostKey = isTeamMode ? 'tank_body_team_' + tank.team + '_' + tank.playerIndex : 'tank_body_' + tank.playerIndex;
@@ -565,7 +572,7 @@ class ArenaScene extends Phaser.Scene {
             });
         }, [], this);
 
-        this.time.delayedCall(RESPAWN_DELAY, () => {
+        this.time.delayedCall(settings.RESPAWN_DELAY, () => {
             if (!this.tanks.includes(tank) || this.gameOver) return;
 
             if (tank.ghostSprite) {
@@ -738,13 +745,13 @@ class ArenaScene extends Phaser.Scene {
         // Left stick: movement
         let lx = pad.axes.length > 0 ? pad.axes[0].getValue() : 0;
         let ly = pad.axes.length > 1 ? pad.axes[1].getValue() : 0;
-        if (Math.abs(lx) < DEADZONE) lx = 0;
-        if (Math.abs(ly) < DEADZONE) ly = 0;
+        if (Math.abs(lx) < settings.DEADZONE) lx = 0;
+        if (Math.abs(ly) < settings.DEADZONE) ly = 0;
 
         const magnitude = Math.min(1, Math.sqrt(lx * lx + ly * ly));
-        if (magnitude > DEADZONE) {
+        if (magnitude > settings.DEADZONE) {
             const moveAngle = Math.atan2(ly, lx);
-            const speed = TANK_SPEED * magnitude;
+            const speed = settings.TANK_SPEED * magnitude;
             tank.body.body.setVelocity(
                 Math.cos(moveAngle) * speed,
                 Math.sin(moveAngle) * speed
@@ -759,10 +766,10 @@ class ArenaScene extends Phaser.Scene {
         // Right stick: turret aim
         let rx = pad.axes.length > 2 ? pad.axes[2].getValue() : 0;
         let ry = pad.axes.length > 3 ? pad.axes[3].getValue() : 0;
-        if (Math.abs(rx) < DEADZONE) rx = 0;
-        if (Math.abs(ry) < DEADZONE) ry = 0;
+        if (Math.abs(rx) < settings.DEADZONE) rx = 0;
+        if (Math.abs(ry) < settings.DEADZONE) ry = 0;
 
-        if (Math.sqrt(rx * rx + ry * ry) > DEADZONE) {
+        if (Math.sqrt(rx * rx + ry * ry) > settings.DEADZONE) {
             tank.turretAngle = Math.atan2(ry, rx);
         }
 
@@ -784,9 +791,9 @@ class ArenaScene extends Phaser.Scene {
         gfx.clear();
 
         const elapsed = time - tank.lastFireTime;
-        if (elapsed >= RELOAD_TIME) return;
+        if (elapsed >= settings.RELOAD_TIME) return;
 
-        const progress = Phaser.Math.Clamp(elapsed / RELOAD_TIME, 0, 1);
+        const progress = Phaser.Math.Clamp(elapsed / settings.RELOAD_TIME, 0, 1);
         const startAngle = Phaser.Math.DegToRad(-90);
         const endAngle = Phaser.Math.DegToRad(-90 + 360 * progress);
         const x = tank.body.x;
@@ -853,7 +860,7 @@ class ArenaScene extends Phaser.Scene {
         const radius = ZONE_SIZE / 2;
 
         const gfx = this.add.graphics().setDepth(2);
-        const timerText = this.add.text(pos.x, pos.y, Math.ceil(ZONE_CAPTURE_TIME / 1000) + '', {
+        const timerText = this.add.text(pos.x, pos.y, Math.ceil(settings.ZONE_CAPTURE_TIME / 1000) + '', {
             fontFamily: 'Arial', fontSize: '32px', color: '#ffffff',
             stroke: '#000000', strokeThickness: 5, fontStyle: 'bold'
         }).setOrigin(0.5).setDepth(3);
@@ -864,7 +871,7 @@ class ArenaScene extends Phaser.Scene {
             y: pos.y,
             radius,
             capturingTeam: null,
-            progress: ZONE_CAPTURE_TIME,
+            progress: settings.ZONE_CAPTURE_TIME,
             timerText
         };
 
@@ -912,7 +919,7 @@ class ArenaScene extends Phaser.Scene {
             if (z.capturingTeam !== activeTeam) {
                 // Different team took over – reset progress
                 z.capturingTeam = activeTeam;
-                z.progress = ZONE_CAPTURE_TIME;
+                z.progress = settings.ZONE_CAPTURE_TIME;
             }
 
             // Count down
@@ -929,7 +936,7 @@ class ArenaScene extends Phaser.Scene {
 
                 // Schedule next zone if game not over
                 if (!this.gameOver) {
-                    this.time.delayedCall(ZONE_RESPAWN_DELAY, () => {
+                    this.time.delayedCall(ZONE_settings.RESPAWN_DELAY, () => {
                         if (!this.gameOver) this.spawnZone();
                     });
                 }
@@ -966,3 +973,5 @@ class ArenaScene extends Phaser.Scene {
     }
 
 }
+
+export { ArenaScene };

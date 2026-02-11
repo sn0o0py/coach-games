@@ -2,26 +2,28 @@
 // WebSocket Connection and State Management
 // ============================================================
 
+import { MSG, SCENE, WS_PATH, WS_PLAYER_COLORS } from '../../shared/constants.js';
+
 // ---- State ----
-const state = {
+export const state = {
     axes: [0, 0, 0, 0],   // lx, ly, rx, ry
     buttons: new Array(17).fill(false)
 };
 
 // Controller-specific enums
-const STATUS = {
+export const STATUS = {
     CONNECTED:     'connected',
     CONNECTED_RTC: 'connected-rtc',
     DISCONNECTED:  'disconnected',
 };
 
-const MODE = {
+export const MODE = {
     ARENA: 'arena',
     LOBBY: 'lobby',
     MENU:  'menu',
 };
 
-let currentMode = MODE.ARENA;
+export let currentMode = MODE.ARENA;
 
 // ---- WebSocket ----
 let ws = null;
@@ -205,7 +207,7 @@ function onSceneChange(sceneName) {
     }
 }
 
-function setMode(mode) {
+export function setMode(mode) {
     if (currentMode === mode) return;
     currentMode = mode;
 
@@ -228,7 +230,7 @@ function setMode(mode) {
     // menu-btn visibility is handled per-case in onSceneChange
 }
 
-function updateStatus(s) {
+export function updateStatus(s) {
     const el = document.getElementById('status');
     const dot = el.querySelector('.dot');
     dot.className = 'dot';
@@ -262,5 +264,7 @@ function sendLoop() {
     requestAnimationFrame(sendLoop);
 }
 
-connectWS();
-requestAnimationFrame(sendLoop);
+export function initConnection() {
+    connectWS();
+    requestAnimationFrame(sendLoop);
+}

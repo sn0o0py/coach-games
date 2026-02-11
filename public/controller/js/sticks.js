@@ -2,6 +2,8 @@
 // Virtual Sticks
 // ============================================================
 
+import { state } from './connection.js';
+
 function setupStick(containerId, knobId, axisX, axisY) {
     const container = document.getElementById(containerId);
     const knob = document.getElementById(knobId);
@@ -78,12 +80,14 @@ function setupStick(containerId, knobId, axisX, axisY) {
     resetKnob();
 }
 
-// Arena sticks
-setupStick('stick-left', 'knob-left', 0, 1);
-setupStick('stick-right', 'knob-right', 2, 3);
+export function initSticks() {
+    // Arena sticks
+    setupStick('stick-left', 'knob-left', 0, 1);
+    setupStick('stick-right', 'knob-right', 2, 3);
 
-// Lobby stick (only left-stick / movement, same axes 0,1)
-setupStick('stick-left-lobby', 'knob-left-lobby', 0, 1);
+    // Lobby stick (only left-stick / movement, same axes 0,1)
+    setupStick('stick-left-lobby', 'knob-left-lobby', 0, 1);
 
-// Menu stick (navigate, same axes 0,1)
-setupStick('stick-left-menu', 'knob-left-menu', 0, 1);
+    // Menu stick (navigate, same axes 0,1)
+    setupStick('stick-left-menu', 'knob-left-menu', 0, 1);
+}

@@ -2,6 +2,9 @@
 // Texture Generation
 // ============================================================
 
+import { getPlayerColor, darken } from './utils.js';
+import { TEAM_COLORS } from './constants.js';
+
 // Helper: generate body / turret / bullet textures for a single player index
 function _genPlayerTextures(g, playerIndex) {
     const color = getPlayerColor(playerIndex);
@@ -43,7 +46,7 @@ function _genPlayerTextures(g, playerIndex) {
 }
 
 // Generate all textures once (shared across scenes via texture manager)
-function generateAllTextures(scene) {
+export function generateAllTextures(scene) {
     if (scene.textures.exists('tank_body_0')) return;
 
     const g = scene.make.graphics({ add: false });

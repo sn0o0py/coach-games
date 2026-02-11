@@ -2,7 +2,7 @@
 // Virtual Gamepad (mimics Phaser Gamepad interface)
 // ============================================================
 
-class VirtualPad {
+export class VirtualPad {
     constructor(slotIndex) {
         this.index = slotIndex;
         this.connected = true;

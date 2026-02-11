@@ -2,6 +2,12 @@
 // Phaser Game Config and Instantiation
 // ============================================================
 
+import { MenuScene } from './scenes/MenuScene.js';
+import { TeamLobbyScene } from './scenes/TeamLobbyScene.js';
+import { ArenaScene } from './scenes/ArenaScene.js';
+import { WinnerScene } from './scenes/WinnerScene.js';
+import { SettingsScene } from './scenes/SettingsScene.js';
+
 const config = {
     type: Phaser.AUTO,
     width: window.innerWidth,

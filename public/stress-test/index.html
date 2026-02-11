@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stress Test - Tank Server</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+    <h1>TANK STRESS TEST</h1>
+    <div id="controls-bar">
+        <label>Bots <input type="number" id="bot-count" value="10" min="1" max="100"></label>
+        <label>Send Hz <input type="number" id="send-rate" value="60" min="1" max="120"></label>
+        <label><input type="checkbox" id="fire-toggle"> Fire</label>
+        <button id="start-btn">START</button>
+    </div>
+</header>
+
+<div id="bot-grid"></div>
+
+<footer id="stats-bar">
+    <span>Connections: <strong id="stat-connections">0</strong></span>
+    <span>Total sent: <strong id="stat-total">0</strong></span>
+    <span>Msg/s: <strong id="stat-rate">0</strong></span>
+    <span>Uptime: <strong id="stat-uptime">0s</strong></span>
+</footer>
+
+<script src="/shared/constants.js"></script>
+<script src="stress-test.js"></script>
+
+</body>
+</html>

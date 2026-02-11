@@ -4,7 +4,10 @@
 // WebSocket players occupy slots 100+ (100 + server-assigned wsId).
 // ============================================================
 
-class InputManager {
+import { VirtualPad } from './VirtualPad.js';
+import { MSG, WS_PATH } from '../../shared/constants.js';
+
+export class InputManager {
     constructor() {
         this._phaserGamepad = null;
         this.wsPads = {};       // wsId (string) -> VirtualPad
@@ -151,4 +154,4 @@ class InputManager {
     offDisconnect(cb) { this._disconnectCbs = this._disconnectCbs.filter(c => c !== cb); }
 }
 
-const inputManager = new InputManager();
+export const inputManager = new InputManager();

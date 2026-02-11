@@ -1,0 +1,154 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background: #16213e;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-bottom: 1px solid #0f3460;
+}
+
+header h1 {
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: #e94560;
+}
+
+#controls-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+#controls-bar label {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#controls-bar input[type="number"] {
+    width: 55px;
+    padding: 4px 6px;
+    border: 1px solid #0f3460;
+    border-radius: 4px;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    font-size: 13px;
+    text-align: center;
+}
+
+#controls-bar input[type="checkbox"] {
+    accent-color: #e94560;
+}
+
+#start-btn {
+    padding: 6px 20px;
+    border: none;
+    border-radius: 4px;
+    background: #33cc66;
+    color: #1a1a2e;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+#start-btn:hover { background: #2ab855; }
+
+#start-btn.running {
+    background: #e94560;
+    color: #fff;
+}
+
+/* Bot grid */
+#bot-grid {
+    flex: 1;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    align-content: start;
+    overflow-y: auto;
+}
+
+.bot-card {
+    background: #16213e;
+    border: 1px solid #0f3460;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.bot-card .bot-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.bot-card .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #555;
+    flex-shrink: 0;
+}
+
+.bot-card .dot.connected {
+    background: #33cc66;
+}
+
+.bot-card .bot-id {
+    color: #888;
+    font-weight: normal;
+}
+
+.bot-card .bot-axes {
+    font-family: 'Consolas', monospace;
+    color: #88aaff;
+    font-size: 11px;
+    white-space: pre;
+}
+
+.bot-card .bot-fire {
+    color: #e94560;
+    font-size: 11px;
+}
+
+.bot-card .bot-sent {
+    color: #666;
+    font-size: 11px;
+}
+
+/* Stats footer */
+#stats-bar {
+    background: #16213e;
+    padding: 10px 20px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    border-top: 1px solid #0f3460;
+}
+
+#stats-bar strong {
+    color: #33cc66;
+}

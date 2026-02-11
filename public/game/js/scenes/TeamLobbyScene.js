@@ -2,6 +2,12 @@
 // TeamLobbyScene – Team Selection for Team Deathmatch
 // ============================================================
 
+import { SCENE } from '../../../shared/constants.js';
+import { inputManager } from '../InputManager.js';
+import { settings } from '../settings.js';
+import { getPlayerColor, getPlayerName, hexStr } from '../utils.js';
+import { TEAM_COLORS } from '../constants.js';
+
 class TeamLobbyScene extends Phaser.Scene {
     constructor() {
         super({ key: SCENE.TEAM_LOBBY });
@@ -124,8 +130,8 @@ class TeamLobbyScene extends Phaser.Scene {
             // Movement with left stick
             let lx = pad.axes.length > 0 ? pad.axes[0].getValue() : 0;
             let ly = pad.axes.length > 1 ? pad.axes[1].getValue() : 0;
-            if (Math.abs(lx) < DEADZONE) lx = 0;
-            if (Math.abs(ly) < DEADZONE) ly = 0;
+            if (Math.abs(lx) < settings.DEADZONE) lx = 0;
+            if (Math.abs(ly) < settings.DEADZONE) ly = 0;
 
             p.sprite.x = Phaser.Math.Clamp(p.sprite.x + lx * 6, 50, w - 50);
             p.sprite.y = Phaser.Math.Clamp(p.sprite.y + ly * 4, 100, this.scale.height - 100);
@@ -206,3 +212,5 @@ class TeamLobbyScene extends Phaser.Scene {
         this.scene.start(SCENE.ARENA, { mode: this.nextMode, padIndices, teams });
     }
 }
+
+export { TeamLobbyScene };

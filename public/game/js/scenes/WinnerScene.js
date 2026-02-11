@@ -2,6 +2,11 @@
 // WinnerScene – Victory Screen
 // ============================================================
 
+import { SCENE } from '../../../shared/constants.js';
+import { inputManager } from '../InputManager.js';
+import { getPlayerColor, getPlayerName, hexStr } from '../utils.js';
+import { TEAM_COLORS } from '../constants.js';
+
 class WinnerScene extends Phaser.Scene {
     constructor() {
         super({ key: SCENE.WINNER });
@@ -129,3 +134,5 @@ class WinnerScene extends Phaser.Scene {
         this.scene.start(SCENE.MENU);
     }
 }
+
+export { WinnerScene };

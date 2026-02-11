@@ -2,6 +2,11 @@
 // MenuScene – Mode Selection
 // ============================================================
 
+import { SCENE } from '../../../shared/constants.js';
+import { generateAllTextures } from '../textures.js';
+import { inputManager } from '../InputManager.js';
+import { FFA_KILL_TARGET, TDM_KILL_TARGET, ZONE_CAPTURE_TARGET } from '../settings.js';
+
 class MenuScene extends Phaser.Scene {
     constructor() {
         super({ key: SCENE.MENU });
@@ -239,3 +244,5 @@ class MenuScene extends Phaser.Scene {
         }
     }
 }
+
+export { MenuScene };
