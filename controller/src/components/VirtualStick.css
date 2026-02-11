@@ -1,0 +1,41 @@
+.stick-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    flex-shrink: 0;
+}
+
+.stick-base {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.stick-knob {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(100, 160, 255, 0.6);
+    border: 2px solid rgba(100, 160, 255, 0.9);
+    top: 45px;
+    left: 45px;
+    pointer-events: none;
+    transition: background 0.1s;
+}
+
+.stick-label {
+    position: absolute;
+    bottom: -22px;
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    letter-spacing: 1px;
+}
+

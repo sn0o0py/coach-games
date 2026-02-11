@@ -7,7 +7,7 @@ import { generateAllTextures } from '../../textures.js';
 import { inputManager } from '../../InputManager.js';
 import { settings } from '../../settings.js';
 import { getPlayerColor, getPlayerName, hexStr } from '../../utils.js';
-import { generateMaze, getStartPosition, getExitPosition } from '../../mazeGenerator.js';
+import { generateMaze, getStartPosition, getExitPosition } from './mazeGenerator.js';
 import { initPauseManager } from '../../pauseManager.js';
 
 class MazeScene extends Phaser.Scene {

@@ -3,7 +3,7 @@ const http = require('http');
 const { WebSocketServer } = require('ws');
 const path = require('path');
 const os = require('os');
-const { MSG, SCENE, WS_PATH } = require('../public/shared/constants');
+const { MSG, WS_PATH } = require('../public/shared/constants');
 
 let nodeDataChannel = null;
 try {

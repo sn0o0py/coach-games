@@ -1,0 +1,49 @@
+.action-btn {
+    width: 200px;
+    height: 70px;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.08s, transform 0.08s;
+    margin-top: 10px;
+    border: 3px solid transparent;
+}
+
+.action-btn.pressed {
+    transform: scale(0.96);
+}
+
+.action-btn-fire {
+    background: rgba(255, 60, 60, 0.35);
+    border-color: rgba(255, 60, 60, 0.7);
+}
+
+.action-btn-fire.pressed {
+    background: rgba(255, 60, 60, 0.7);
+}
+
+.action-btn-ready {
+    background: rgba(60, 200, 60, 0.25);
+    border-color: rgba(60, 200, 60, 0.6);
+}
+
+.action-btn-ready.pressed,
+.action-btn-ready.active {
+    background: rgba(60, 200, 60, 0.65);
+}
+
+.action-btn-select {
+    background: rgba(60, 200, 60, 0.25);
+    border-color: rgba(60, 200, 60, 0.6);
+}
+
+.action-btn-select.pressed {
+    background: rgba(60, 200, 60, 0.65);
+}
+

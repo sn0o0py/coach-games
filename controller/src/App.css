@@ -1,0 +1,151 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #1a1a2e;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#header {
+    text-align: center;
+    padding: 12px 0 6px;
+}
+
+#header h1 {
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: #ddd;
+}
+
+#status {
+    font-size: 14px;
+    margin-top: 4px;
+    color: #888;
+}
+
+#status .dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #666;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+#status .dot.connected {
+    background: #33cc66;
+}
+
+#status .dot.connecting {
+    background: #ffcc00;
+}
+
+#scene-label {
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    margin-top: 2px;
+    letter-spacing: 1px;
+}
+
+#controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100% - 90px);
+    gap: 20px;
+}
+
+#sticks {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    padding: 0 20px;
+}
+
+#sticks-lobby {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 0 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Landscape mode */
+@media (orientation: landscape) {
+    #controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Arena sticks: push to far edges */
+    #mode-arena #sticks {
+        justify-content: space-between;
+        padding: 0 100px;
+    }
+
+    #mode-arena #sticks .stick-container {
+        width: 130px;
+        height: 130px;
+    }
+
+    #mode-arena #sticks .stick-base {
+        width: 130px;
+        height: 130px;
+    }
+
+    #mode-arena #sticks .stick-knob {
+        width: 52px;
+        height: 52px;
+        top: 39px;
+        left: 39px;
+    }
+
+    /* Arena fire button: full width */
+    #mode-arena #fire-wrapper .action-btn {
+        width: calc(100vw - 20px);
+        height: 60px;
+        font-size: 22px;
+    }
+
+    /* Non-arena sticks & buttons in landscape */
+    .stick-container {
+        width: 130px;
+        height: 130px;
+    }
+
+    .stick-base {
+        width: 130px;
+        height: 130px;
+    }
+
+    .stick-knob {
+        width: 52px;
+        height: 52px;
+        top: 39px;
+        left: 39px;
+    }
+
+    .action-btn {
+        width: 180px;
+        height: 60px;
+        font-size: 20px;
+    }
+}
+

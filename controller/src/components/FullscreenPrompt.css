@@ -1,0 +1,34 @@
+#fullscreen-prompt {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 30, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    gap: 20px;
+    cursor: pointer;
+}
+
+#fullscreen-prompt .icon {
+    font-size: 64px;
+    opacity: 0.8;
+}
+
+#fullscreen-prompt .prompt-text {
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #ddd;
+}
+
+#fullscreen-prompt .prompt-sub {
+    font-size: 14px;
+    color: #888;
+    margin-top: -8px;
+}
+
