@@ -12,15 +12,26 @@ export const MSG = {
     WS_CONNECTED:    'ws_connected',
     WS_DISCONNECTED: 'ws_disconnected',
     WS_STATE:        'ws_state',
+    BROADCAST_STATE:  'broadcast_state',  // For sequence game state updates
+    PLAYER_MESSAGE:   'player_message',   // Per-player targeted message
 };
 
 // Scene names
 export const SCENE = {
-    ARENA:      'ArenaScene',
-    MENU:       'MenuScene',
-    TEAM_LOBBY: 'TeamLobbyScene',
-    WINNER:     'WinnerScene',
-    SETTINGS:   'SettingsScene',
+    GAME_SELECTION: 'GameSelectionScene',
+    TANK_MENU:      'TankMenuScene',
+    ARENA:          'ArenaScene',
+    TEAM_LOBBY:     'TeamLobbyScene',
+    WINNER:         'WinnerScene',
+    SETTINGS:       'SettingsScene',
+    MAZE_MENU:      'MazeMenuScene',
+    MAZE:           'MazeScene',
+    MAZE_WINNER:    'MazeWinnerScene',
+    MAZE_SETTINGS:  'MazeSettingsScene',
+    SEQUENCE_MENU:    'SequenceMenuScene',
+    SEQUENCE:         'SequenceScene',
+    SEQUENCE_WINNER:  'SequenceWinnerScene',
+    SEQUENCE_SETTINGS: 'SequenceSettingsScene',
 };
 
 // WebSocket endpoint paths

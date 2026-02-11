@@ -70,6 +70,33 @@
             <div id="select-btn" class="action-btn">SELECT</div>
         </div>
     </div>
+
+    <!-- ===== MAZE MODE: single stick in center (movement only) ===== -->
+    <div id="mode-maze" class="hidden">
+        <div style="display:flex;justify-content:center;width:100%;padding:0 20px;">
+            <div class="stick-container" id="stick-maze">
+                <div class="stick-base"></div>
+                <div class="stick-knob" id="knob-maze"></div>
+                <div class="stick-label">MOVE</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SEQUENCE MODE: four colored buttons ===== -->
+    <div id="mode-sequence" class="hidden">
+        <div id="memorization-message" class="memorization-message hidden">
+            <div class="memorization-text">MEMORIZATION TIME</div>
+        </div>
+        <div id="eliminated-message" class="eliminated-message hidden">
+            <div class="eliminated-text">ELIMINATED</div>
+        </div>
+        <div class="sequence-buttons">
+            <button id="btn-green" class="color-btn green">GREEN</button>
+            <button id="btn-blue" class="color-btn blue">BLUE</button>
+            <button id="btn-yellow" class="color-btn yellow">YELLOW</button>
+            <button id="btn-red" class="color-btn red">RED</button>
+        </div>
+    </div>
 </div>
 
 <script type="module" src="js/main.js"></script>

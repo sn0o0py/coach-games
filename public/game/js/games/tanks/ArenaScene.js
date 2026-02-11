@@ -2,12 +2,13 @@
 // ArenaScene – Main Gameplay
 // ============================================================
 
-import { SCENE } from '../../../shared/constants.js';
-import { generateAllTextures } from '../textures.js';
-import { inputManager } from '../InputManager.js';
-import { settings } from '../settings.js';
-import { getPlayerColor, getPlayerName, hexStr } from '../utils.js';
-import { TEAM_COLORS } from '../constants.js';
+import { SCENE } from '../../../../shared/constants.js';
+import { generateAllTextures } from '../../textures.js';
+import { inputManager } from '../../InputManager.js';
+import { settings } from '../../settings.js';
+import { getPlayerColor, getPlayerName, hexStr } from '../../utils.js';
+import { TEAM_COLORS } from '../../constants.js';
+import { initPauseManager } from '../../pauseManager.js';
 
 class ArenaScene extends Phaser.Scene {
     constructor() {
@@ -68,12 +69,6 @@ class ArenaScene extends Phaser.Scene {
             this.spawnZone();
         }
 
-        // Pause state
-        this.isPaused = false;
-        this._prevStart = true;  // start as true to avoid triggering on scene entry
-        this._prevA = true;
-        this.pauseOverlay = null;
-
         // Handle mid-game disconnects (physical + WebSocket)
         this.input.gamepad.on('disconnected', (pad) => this.onPadDisconnected(pad));
         this._wsDisconnectCb = (pad) => this.onPadDisconnected(pad);
@@ -90,10 +85,20 @@ class ArenaScene extends Phaser.Scene {
         this.events.on('shutdown', () => {
             if (this._wsConnectCb) inputManager.offConnect(this._wsConnectCb);
             if (this._wsDisconnectCb) inputManager.offDisconnect(this._wsDisconnectCb);
-            if (this.pauseOverlay) {
-                this.pauseOverlay.forEach(obj => obj.destroy());
-                this.pauseOverlay = null;
-            }
+        });
+
+        // Initialize pause manager
+        initPauseManager(this, {
+            stopEntities: function() {
+                // Stop all tank velocities
+                for (const tank of this.tanks) {
+                    if (tank && tank.alive) {
+                        tank.body.body.setVelocity(0, 0);
+                    }
+                }
+            },
+            returnScene: SCENE.TANK_MENU,
+            currentScene: SCENE.ARENA
         });
     }
 
@@ -616,99 +621,12 @@ class ArenaScene extends Phaser.Scene {
     }
 
     // --------------------------------------------------------
-    // Pause / Unpause
-    // --------------------------------------------------------
-    pauseGame() {
-        this.isPaused = true;
-        this.physics.world.pause();
-
-        // Stop all tank velocities
-        for (const tank of this.tanks) {
-            if (tank && tank.alive) {
-                tank.body.body.setVelocity(0, 0);
-            }
-        }
-
-        this.tweens.pauseAll();
-        this.time.paused = true;
-
-        // Create overlay
-        const w = this.scale.width;
-        const h = this.scale.height;
-        this.pauseOverlay = [];
-
-        const bg = this.add.rectangle(w / 2, h / 2, w, h, 0x000000, 0.7).setDepth(400);
-        this.pauseOverlay.push(bg);
-
-        const title = this.add.text(w / 2, h / 2 - 60, 'PAUSED', {
-            fontFamily: 'Arial', fontSize: '56px', color: '#ffffff',
-            stroke: '#000000', strokeThickness: 6, fontStyle: 'bold'
-        }).setOrigin(0.5).setDepth(401);
-        this.pauseOverlay.push(title);
-
-        const exitText = this.add.text(w / 2, h / 2 + 20, 'EXIT TO MENU', {
-            fontFamily: 'Arial', fontSize: '28px', color: '#ffcc00',
-            stroke: '#000000', strokeThickness: 4, fontStyle: 'bold'
-        }).setOrigin(0.5).setDepth(401);
-        this.pauseOverlay.push(exitText);
-
-        const hint = this.add.text(w / 2, h / 2 + 70, 'Press A to select  /  Start to resume', {
-            fontFamily: 'Arial', fontSize: '16px', color: '#888888',
-            stroke: '#000000', strokeThickness: 3
-        }).setOrigin(0.5).setDepth(401);
-        this.pauseOverlay.push(hint);
-
-        inputManager.broadcastScene('paused');
-    }
-
-    resumeGame() {
-        this.isPaused = false;
-        this.physics.world.resume();
-        this.tweens.resumeAll();
-        this.time.paused = false;
-
-        if (this.pauseOverlay) {
-            this.pauseOverlay.forEach(obj => obj.destroy());
-            this.pauseOverlay = null;
-        }
-
-        inputManager.broadcastScene(SCENE.ARENA);
-    }
-
-    // --------------------------------------------------------
     // Update loop
     // --------------------------------------------------------
     update(time, delta) {
-        // --- Start button (buttons[9]) pause toggle ---
-        let startPressed = false;
-        let aPressed = false;
-        const allPads = inputManager.getAllConnectedPads();
-        for (const pad of allPads) {
-            if (pad.buttons[9] && pad.buttons[9].pressed) startPressed = true;
-            if (pad.buttons[0] && pad.buttons[0].pressed) aPressed = true;
-        }
-
-        // Rising edge detection for Start
-        if (startPressed && !this._prevStart && !this.gameOver) {
-            if (this.isPaused) {
-                this.resumeGame();
-            } else {
-                this.pauseGame();
-            }
-        }
-        this._prevStart = startPressed;
-
-        // While paused: check A button for "Exit to Menu"
-        if (this.isPaused) {
-            if (aPressed && !this._prevA) {
-                this.physics.world.resume();
-                this.tweens.resumeAll();
-                this.time.paused = false;
-
-                this.scene.start(SCENE.MENU);
-            }
-            this._prevA = aPressed;
-            return;
+        // Handle pause input
+        if (this.handlePauseInput()) {
+            return; // Paused - skip rest of update
         }
 
         if (this.gameOver) return;

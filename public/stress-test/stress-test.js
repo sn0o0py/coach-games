@@ -2,6 +2,8 @@
 // Stress Test – Simulates multiple controller connections
 // ============================================================
 
+import { MSG, WS_PATH } from '../shared/constants.js';
+
 const bots = [];
 let running = false;
 let sendIntervalId = null;

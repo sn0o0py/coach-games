@@ -2,10 +2,10 @@
 // WinnerScene – Victory Screen
 // ============================================================
 
-import { SCENE } from '../../../shared/constants.js';
-import { inputManager } from '../InputManager.js';
-import { getPlayerColor, getPlayerName, hexStr } from '../utils.js';
-import { TEAM_COLORS } from '../constants.js';
+import { SCENE } from '../../../../shared/constants.js';
+import { inputManager } from '../../InputManager.js';
+import { getPlayerColor, getPlayerName, hexStr } from '../../utils.js';
+import { TEAM_COLORS } from '../../constants.js';
 
 class WinnerScene extends Phaser.Scene {
     constructor() {
@@ -131,7 +131,7 @@ class WinnerScene extends Phaser.Scene {
     returnToMenu() {
         if (this._returned) return;
         this._returned = true;
-        this.scene.start(SCENE.MENU);
+        this.scene.start(SCENE.TANK_MENU);
     }
 }
 

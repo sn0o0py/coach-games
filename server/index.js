@@ -48,8 +48,13 @@ function startServer(options = {}) {
     const gameWss = new WebSocketServer({ noServer: true });
 
     // ----- Controller state storage -----
-    let nextControllerId = 0;
     const controllers = new Map(); // id -> { ws, state, pc, dc, useDataChannel }
+
+    function getLowestAvailableId() {
+        let id = 0;
+        while (controllers.has(String(id))) id++;
+        return String(id);
+    }
 
     server.on('upgrade', (req, socket, head) => {
         const url = new URL(req.url, `http://${req.headers.host}`);
@@ -132,7 +137,7 @@ function startServer(options = {}) {
 
     // ----- /ws/controller  -- individual remote controllers -----
     controllerWss.on('connection', (ws) => {
-        const id = String(nextControllerId++);
+        const id = getLowestAvailableId();
         const defaultState = {
             axes: [0, 0, 0, 0],
             buttons: new Array(17).fill(false)
@@ -211,6 +216,16 @@ function startServer(options = {}) {
         if (msg.type === MSG.SCENE) {
             currentScene = msg.scene;
             broadcastToControllers(msg);
+        }
+        if (msg.type === MSG.BROADCAST_STATE) {
+            broadcastToControllers(msg);
+        }
+        if (msg.type === MSG.PLAYER_MESSAGE) {
+            // Send message to specific controller
+            const entry = controllers.get(msg.targetId);
+            if (entry && entry.ws && entry.ws.readyState === 1) {
+                entry.ws.send(JSON.stringify({ type: MSG.PLAYER_MESSAGE, message: msg.message }));
+            }
         }
     }
 

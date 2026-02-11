@@ -2,11 +2,20 @@
 // Phaser Game Config and Instantiation
 // ============================================================
 
-import { MenuScene } from './scenes/MenuScene.js';
-import { TeamLobbyScene } from './scenes/TeamLobbyScene.js';
-import { ArenaScene } from './scenes/ArenaScene.js';
-import { WinnerScene } from './scenes/WinnerScene.js';
-import { SettingsScene } from './scenes/SettingsScene.js';
+import { GameSelectionScene } from './scenes/GameSelectionScene.js';
+import { TankMenuScene } from './games/tanks/TankMenuScene.js';
+import { TeamLobbyScene } from './games/tanks/TeamLobbyScene.js';
+import { ArenaScene } from './games/tanks/ArenaScene.js';
+import { WinnerScene } from './games/tanks/WinnerScene.js';
+import { TankSettingsScene } from './games/tanks/TankSettingsScene.js';
+import { MazeMenuScene } from './games/maze/MazeMenuScene.js';
+import { MazeScene } from './games/maze/MazeScene.js';
+import { MazeWinnerScene } from './games/maze/MazeWinnerScene.js';
+import { MazeSettingsScene } from './games/maze/MazeSettingsScene.js';
+import { SequenceMenuScene } from './games/sequence/SequenceMenuScene.js';
+import { SequenceScene } from './games/sequence/SequenceScene.js';
+import { SequenceWinnerScene } from './games/sequence/SequenceWinnerScene.js';
+import { SequenceSettingsScene } from './games/sequence/SequenceSettingsScene.js';
 
 const config = {
     type: Phaser.AUTO,
@@ -29,7 +38,7 @@ const config = {
     input: {
         gamepad: true
     },
-    scene: [MenuScene, TeamLobbyScene, ArenaScene, WinnerScene, SettingsScene]
+    scene: [GameSelectionScene, TankMenuScene, TeamLobbyScene, ArenaScene, WinnerScene, TankSettingsScene, MazeMenuScene, MazeScene, MazeWinnerScene, MazeSettingsScene, SequenceMenuScene, SequenceScene, SequenceWinnerScene, SequenceSettingsScene]
 };
 
 const game = new Phaser.Game(config);

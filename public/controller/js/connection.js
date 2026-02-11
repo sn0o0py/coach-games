@@ -21,6 +21,8 @@ export const MODE = {
     ARENA: 'arena',
     LOBBY: 'lobby',
     MENU:  'menu',
+    MAZE:  'maze',
+    SEQUENCE: 'sequence',
 };
 
 export let currentMode = MODE.ARENA;
@@ -143,12 +145,17 @@ function connectWS() {
     ws.onmessage = (e) => {
         try {
             const msg = JSON.parse(e.data);
+            console.log(msg);
             if (msg.type === MSG.ID) {
                 playerId = msg.id;
                 updateStatus(STATUS.CONNECTED);
                 updatePlayerColor();
             } else if (msg.type === MSG.SCENE) {
                 onSceneChange(msg.scene);
+            } else if (msg.type === MSG.BROADCAST_STATE) {
+                onBroadcastState(msg.state);
+            } else if (msg.type === MSG.PLAYER_MESSAGE) {
+                onPlayerMessage(msg.message);
             } else if (msg.type === MSG.RTC_OFFER) {
                 handleRtcOffer(msg.sdp, msg.sdpType);
             } else if (msg.type === MSG.RTC_CANDIDATE) {
@@ -184,6 +191,14 @@ function onSceneChange(sceneName) {
         setMode(MODE.ARENA);
         label.textContent = 'In Game';
         menuBtn.classList.remove('hidden');
+    } else if (sceneName === SCENE.GAME_SELECTION) {
+        setMode(MODE.MENU);
+        label.textContent = 'Game Selection';
+        menuBtn.classList.add('hidden');
+    } else if (sceneName === SCENE.TANK_MENU) {
+        setMode(MODE.MENU);
+        label.textContent = 'Tank Menu';
+        menuBtn.classList.add('hidden');
     } else if (sceneName === SCENE.MENU) {
         setMode(MODE.MENU);
         label.textContent = 'Main Menu';
@@ -200,10 +215,118 @@ function onSceneChange(sceneName) {
         setMode(MODE.LOBBY);
         label.textContent = 'Team Selection';
         menuBtn.classList.add('hidden');
+    } else if (sceneName === SCENE.MAZE_MENU) {
+        setMode(MODE.MENU);
+        label.textContent = 'Maze Menu';
+        menuBtn.classList.add('hidden');
+    } else if (sceneName === SCENE.MAZE) {
+        setMode(MODE.MAZE);
+        label.textContent = 'Maze Race';
+        menuBtn.classList.remove('hidden');
+    } else if (sceneName === SCENE.MAZE_WINNER) {
+        setMode(MODE.MENU);
+        label.textContent = 'Maze Results';
+        menuBtn.classList.add('hidden');
+    } else if (sceneName === SCENE.MAZE_SETTINGS) {
+        setMode(MODE.MENU);
+        label.textContent = 'Maze Settings';
+        menuBtn.classList.add('hidden');
+    } else if (sceneName === SCENE.SEQUENCE_MENU) {
+        setMode(MODE.MENU);
+        label.textContent = 'Sequence Menu';
+        menuBtn.classList.add('hidden');
+    } else if (sceneName === SCENE.SEQUENCE) {
+        setMode(MODE.SEQUENCE);
+        label.textContent = 'Sequence Challenge';
+        menuBtn.classList.remove('hidden');
+        // Check if we're in memorization phase (game will send this via custom message)
+        // For now, we'll handle it via a data attribute or separate message
+    } else if (sceneName === SCENE.SEQUENCE_WINNER) {
+        setMode(MODE.MENU);
+        label.textContent = 'Sequence Results';
+        menuBtn.classList.add('hidden');
+        // Clear eliminated message when moving to winner scene
+        const eliminatedMsg = document.getElementById('eliminated-message');
+        if (eliminatedMsg) eliminatedMsg.classList.add('hidden');
+    } else if (sceneName === SCENE.SEQUENCE_SETTINGS) {
+        setMode(MODE.MENU);
+        label.textContent = 'Sequence Settings';
+        menuBtn.classList.add('hidden');
     } else {
         setMode(MODE.ARENA);
         label.textContent = '';
         menuBtn.classList.remove('hidden');
+    }
+}
+
+function onBroadcastState(state) {
+    if (currentMode !== MODE.SEQUENCE) return;
+    
+    const memorizationMsg = document.getElementById('memorization-message');
+    const eliminatedMsg = document.getElementById('eliminated-message');
+    const buttons = document.querySelectorAll('#mode-sequence .color-btn');
+    
+    // Don't modify eliminated message here - it persists until game ends
+    // Only check if player is already eliminated
+    const isEliminated = eliminatedMsg && !eliminatedMsg.classList.contains('hidden');
+    
+    if (state === 'memorizing') {
+        // Show memorization message and disable buttons
+        if (memorizationMsg) memorizationMsg.classList.remove('hidden');
+        // Don't hide eliminated message - it persists
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('disabled');
+        });
+    } else if (state === 'input') {
+        // Hide memorization message
+        if (memorizationMsg) memorizationMsg.classList.add('hidden');
+        // Keep buttons disabled if eliminated, otherwise enable
+        buttons.forEach(btn => {
+            if (isEliminated) {
+                btn.disabled = true;
+                btn.classList.add('disabled');
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('disabled');
+            }
+        });
+    } else {
+        // Other states (countdown, etc.)
+        if (memorizationMsg) memorizationMsg.classList.add('hidden');
+        // Keep buttons disabled if eliminated, otherwise enable
+        buttons.forEach(btn => {
+            if (isEliminated) {
+                btn.disabled = true;
+                btn.classList.add('disabled');
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('disabled');
+            }
+        });
+    }
+}
+
+function onPlayerMessage(message) {
+    if (currentMode !== MODE.SEQUENCE) return;
+    
+    const eliminatedMsg = document.getElementById('eliminated-message');
+    const buttons = document.querySelectorAll('#mode-sequence .color-btn');
+    
+    if (message === 'eliminated') {
+        // Show eliminated message and disable buttons
+        if (eliminatedMsg) eliminatedMsg.classList.remove('hidden');
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('disabled');
+        });
+    } else if (message === 'active') {
+        // Hide eliminated message and enable buttons
+        if (eliminatedMsg) eliminatedMsg.classList.add('hidden');
+        buttons.forEach(btn => {
+            btn.disabled = false;
+            btn.classList.remove('disabled');
+        });
     }
 }
 
@@ -226,6 +349,16 @@ export function setMode(mode) {
     document.getElementById('mode-arena').classList.toggle('hidden', mode !== MODE.ARENA);
     document.getElementById('mode-lobby').classList.toggle('hidden', mode !== MODE.LOBBY);
     document.getElementById('mode-menu').classList.toggle('hidden', mode !== MODE.MENU);
+    document.getElementById('mode-maze').classList.toggle('hidden', mode !== MODE.MAZE);
+    document.getElementById('mode-sequence').classList.toggle('hidden', mode !== MODE.SEQUENCE);
+
+    // Reset sequence state when switching away
+    if (mode !== MODE.SEQUENCE) {
+        // Clear eliminated message when leaving sequence mode
+        const eliminatedMsg = document.getElementById('eliminated-message');
+        if (eliminatedMsg) eliminatedMsg.classList.add('hidden');
+        onBroadcastState('input'); // Reset to input state
+    }
 
     // menu-btn visibility is handled per-case in onSceneChange
 }

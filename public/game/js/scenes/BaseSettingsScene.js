@@ -1,24 +1,22 @@
 // ============================================================
-// SettingsScene – Edit Game Variables
+// BaseSettingsScene – Base Class for Settings Scenes
 // ============================================================
 
-import { SCENE } from '../../../shared/constants.js';
 import { inputManager } from '../InputManager.js';
-import { settings, saveSettings } from '../settings.js';
 
-class SettingsScene extends Phaser.Scene {
-    constructor() {
-        super({ key: SCENE.SETTINGS });
+class BaseSettingsScene extends Phaser.Scene {
+    constructor(config) {
+        super(config);
     }
 
     create() {
         inputManager.setPhaserGamepad(this.input.gamepad);
-        inputManager.broadcastScene(SCENE.SETTINGS);
+        inputManager.broadcastScene(this.scene.key);
         const w = this.scale.width;
         const h = this.scale.height;
 
         // Title
-        this.add.text(w / 2, 30, 'SETTINGS', {
+        this.add.text(w / 2, 30, this.getTitle(), {
             fontFamily: 'Arial', fontSize: '52px', color: '#ffffff',
             stroke: '#000000', strokeThickness: 8, fontStyle: 'bold'
         }).setOrigin(0.5);
@@ -28,21 +26,8 @@ class SettingsScene extends Phaser.Scene {
             stroke: '#000000', strokeThickness: 2
         }).setOrigin(0.5);
 
-        // Slider definitions: { label, varName, min, max, step, get, set }
-        this.sliders = [
-            { label: 'Tank Speed',         min: 50,   max: 500,   step: 10,  get: () => settings.TANK_SPEED,         set: v => { settings.TANK_SPEED = v; } },
-            { label: 'Bullet Speed',       min: 100,  max: 1000,  step: 25,  get: () => settings.BULLET_SPEED,       set: v => { settings.BULLET_SPEED = v; } },
-            { label: 'Reload Time (ms)',   min: 0,    max: 3000,  step: 50,  get: () => settings.RELOAD_TIME,        set: v => { settings.RELOAD_TIME = v; } },
-            { label: 'Respawn Delay (ms)', min: 500,  max: 10000, step: 250, get: () => settings.RESPAWN_DELAY,      set: v => { settings.RESPAWN_DELAY = v; } },
-            { label: 'Invincibility (ms)', min: 0,    max: 5000,  step: 250, get: () => settings.INVINCIBILITY_TIME, set: v => { settings.INVINCIBILITY_TIME = v; } },
-            { label: 'Wall Count',         min: 0,    max: 30,    step: 1,   get: () => settings.WALL_COUNT,         set: v => { settings.WALL_COUNT = v; } },
-            { label: 'FFA Kill Target',    min: 1,    max: 50,    step: 1,   get: () => settings.FFA_KILL_TARGET,    set: v => { settings.FFA_KILL_TARGET = v; } },
-            { label: 'TDM Kill Target',    min: 1,    max: 50,    step: 1,   get: () => settings.TDM_KILL_TARGET,    set: v => { settings.TDM_KILL_TARGET = v; } },
-            { label: 'Zone Cap Time (ms)', min: 2000, max: 30000, step: 1000,get: () => settings.ZONE_CAPTURE_TIME,  set: v => { settings.ZONE_CAPTURE_TIME = v; } },
-            { label: 'Zone Respawn (ms)',  min: 0,    max: 10000, step: 500, get: () => settings.ZONE_RESPAWN_DELAY, set: v => { settings.ZONE_RESPAWN_DELAY = v; } },
-            { label: 'Zone Cap Target',   min: 1,    max: 30,    step: 1,   get: () => settings.ZONE_CAPTURE_TARGET,set: v => { settings.ZONE_CAPTURE_TARGET = v; } },
-            { label: 'Zone Size',         min: 60,   max: 300,   step: 10,  get: () => settings.ZONE_SIZE,          set: v => { settings.ZONE_SIZE = v; } },
-        ];
+        // Get sliders from subclass
+        this.sliders = this.getSliders();
 
         this.selectedIndex = 0;
         // Extra "row" at end for the Back button
@@ -111,6 +96,23 @@ class SettingsScene extends Phaser.Scene {
         this._holdRate = 80;  // ms between repeats
     }
 
+    // Abstract methods - must be overridden by subclasses
+    getSliders() {
+        throw new Error('getSliders() must be implemented by subclass');
+    }
+
+    getTitle() {
+        throw new Error('getTitle() must be implemented by subclass');
+    }
+
+    getBackScene() {
+        throw new Error('getBackScene() must be implemented by subclass');
+    }
+
+    onSave() {
+        // Optional - can be overridden by subclasses
+    }
+
     _getPadDebounce(padIndex) {
         if (!this._padState.has(padIndex)) {
             // Initialize as true to prevent carry-over
@@ -168,7 +170,7 @@ class SettingsScene extends Phaser.Scene {
         val = Math.round(val / s.step) * s.step;
         s.set(val);
         this.updateSliderVisual(sliderIndex);
-        saveSettings();
+        this.onSave();
     }
 
     update(time, delta) {
@@ -240,7 +242,7 @@ class SettingsScene extends Phaser.Scene {
             const aBtn = pad.buttons[0] ? pad.buttons[0].pressed : false;
             if (aBtn && !state.prevA) {
                 if (this.selectedIndex === this.sliders.length) {
-                    this.scene.start(SCENE.MENU);
+                    this.scene.start(this.getBackScene());
                     return; // Scene transitioning, exit immediately
                 }
             }
@@ -249,4 +251,5 @@ class SettingsScene extends Phaser.Scene {
     }
 }
 
-export { SettingsScene };
+export { BaseSettingsScene };
+

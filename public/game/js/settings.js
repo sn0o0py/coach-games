@@ -17,7 +17,14 @@ export const settings = {
     ZONE_CAPTURE_TIME: 10000,    // ms to capture a zone
     ZONE_RESPAWN_DELAY: 3000,    // ms before next zone spawns
     ZONE_CAPTURE_TARGET: 10,     // captures needed to win
-    ZONE_SIZE: 120               // zone diameter in pixels
+    ZONE_SIZE: 120,              // zone diameter in pixels
+    MAZE_SIZE: 1000,             // maze width/height in pixels (square)
+    MAZE_PLAYER_SPEED: 200,      // player movement speed in maze
+    SEQUENCE_DISPLAY_TIME: 10000, // time to show sequence (ms)
+    SEQUENCE_INPUT_TIME: 10000,  // time limit for players to input sequence (ms)
+    SEQUENCE_INITIAL_LENGTH: 4,   // starting sequence length
+    SEQUENCE_COUNTDOWN_TIME: 3000, // countdown duration before showing sequence (ms)
+    SEQUENCE_COLORS: [0x00ff00, 0xff0000, 0x0088ff, 0xffff00] // Green, Red, Blue, Yellow (A, B, X, Y)
 };
 
 // Re-export for convenient destructuring
@@ -36,7 +43,14 @@ export const {
     ZONE_CAPTURE_TIME,
     ZONE_RESPAWN_DELAY,
     ZONE_CAPTURE_TARGET,
-    ZONE_SIZE
+    ZONE_SIZE,
+    MAZE_SIZE,
+    MAZE_PLAYER_SPEED,
+    SEQUENCE_DISPLAY_TIME,
+    SEQUENCE_INPUT_TIME,
+    SEQUENCE_INITIAL_LENGTH,
+    SEQUENCE_COUNTDOWN_TIME,
+    SEQUENCE_COLORS
 } = settings;
 
 // ----- Settings persistence (localStorage) -----
@@ -58,6 +72,46 @@ export function saveSettings() {
         ZONE_SIZE: settings.ZONE_SIZE
     };
     localStorage.setItem('tankArenaSettings', JSON.stringify(data));
+}
+
+export function saveMazeSettings() {
+    const data = {
+        MAZE_SIZE: settings.MAZE_SIZE,
+        MAZE_PLAYER_SPEED: settings.MAZE_PLAYER_SPEED
+    };
+    localStorage.setItem('mazeSettings', JSON.stringify(data));
+}
+
+export function loadMazeSettings() {
+    try {
+        const raw = localStorage.getItem('mazeSettings');
+        if (!raw) return;
+        const d = JSON.parse(raw);
+        if (d.MAZE_SIZE !== undefined) settings.MAZE_SIZE = d.MAZE_SIZE;
+        if (d.MAZE_PLAYER_SPEED !== undefined) settings.MAZE_PLAYER_SPEED = d.MAZE_PLAYER_SPEED;
+    } catch (e) { /* ignore corrupt data */ }
+}
+
+export function saveSequenceSettings() {
+    const data = {
+        SEQUENCE_DISPLAY_TIME: settings.SEQUENCE_DISPLAY_TIME,
+        SEQUENCE_INPUT_TIME: settings.SEQUENCE_INPUT_TIME,
+        SEQUENCE_INITIAL_LENGTH: settings.SEQUENCE_INITIAL_LENGTH,
+        SEQUENCE_COUNTDOWN_TIME: settings.SEQUENCE_COUNTDOWN_TIME
+    };
+    localStorage.setItem('sequenceSettings', JSON.stringify(data));
+}
+
+export function loadSequenceSettings() {
+    try {
+        const raw = localStorage.getItem('sequenceSettings');
+        if (!raw) return;
+        const d = JSON.parse(raw);
+        if (d.SEQUENCE_DISPLAY_TIME !== undefined) settings.SEQUENCE_DISPLAY_TIME = d.SEQUENCE_DISPLAY_TIME;
+        if (d.SEQUENCE_INPUT_TIME !== undefined) settings.SEQUENCE_INPUT_TIME = d.SEQUENCE_INPUT_TIME;
+        if (d.SEQUENCE_INITIAL_LENGTH !== undefined) settings.SEQUENCE_INITIAL_LENGTH = d.SEQUENCE_INITIAL_LENGTH;
+        if (d.SEQUENCE_COUNTDOWN_TIME !== undefined) settings.SEQUENCE_COUNTDOWN_TIME = d.SEQUENCE_COUNTDOWN_TIME;
+    } catch (e) { /* ignore corrupt data */ }
 }
 
 export function loadSettings() {
@@ -82,3 +136,5 @@ export function loadSettings() {
     } catch (e) { /* ignore corrupt data */ }
 }
 loadSettings();
+loadMazeSettings();
+loadSequenceSettings();

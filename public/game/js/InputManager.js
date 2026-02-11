@@ -148,6 +148,30 @@ export class InputManager {
         }
     }
 
+    /** Send game state to controllers. */
+    broadcastState(state) {
+        if (this._useIPC) {
+            window.electronAPI.send({ type: MSG.BROADCAST_STATE, state });
+        } else if (this.ws && this.ws.readyState === 1) {
+            this.ws.send(JSON.stringify({ type: MSG.BROADCAST_STATE, state }));
+        }
+    }
+
+    /** Send a message to a specific player by padIndex. */
+    sendPlayerMessage(padIndex, message) {
+        // For WebSocket players (padIndex >= 100), extract the wsId
+        if (padIndex >= 100) {
+            const wsId = String(padIndex - 100);
+            if (this._useIPC) {
+                window.electronAPI.send({ type: MSG.PLAYER_MESSAGE, targetId: wsId, message });
+            } else if (this.ws && this.ws.readyState === 1) {
+                this.ws.send(JSON.stringify({ type: MSG.PLAYER_MESSAGE, targetId: wsId, message }));
+            }
+        }
+        // For physical gamepads (0-3), we can't send messages directly
+        // They would need to be handled differently if needed
+    }
+
     onConnect(cb) { this._connectCbs.push(cb); }
     offConnect(cb) { this._connectCbs = this._connectCbs.filter(c => c !== cb); }
     onDisconnect(cb) { this._disconnectCbs.push(cb); }

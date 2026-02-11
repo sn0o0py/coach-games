@@ -2,11 +2,11 @@
 // TeamLobbyScene – Team Selection for Team Deathmatch
 // ============================================================
 
-import { SCENE } from '../../../shared/constants.js';
-import { inputManager } from '../InputManager.js';
-import { settings } from '../settings.js';
-import { getPlayerColor, getPlayerName, hexStr } from '../utils.js';
-import { TEAM_COLORS } from '../constants.js';
+import { SCENE } from '../../../../shared/constants.js';
+import { inputManager } from '../../InputManager.js';
+import { settings } from '../../settings.js';
+import { getPlayerColor, getPlayerName, hexStr } from '../../utils.js';
+import { TEAM_COLORS } from '../../constants.js';
 
 class TeamLobbyScene extends Phaser.Scene {
     constructor() {

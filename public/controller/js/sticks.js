@@ -80,6 +80,58 @@ function setupStick(containerId, knobId, axisX, axisY) {
     resetKnob();
 }
 
+function setupSequenceButton(buttonId, buttonIndex) {
+    const btn = document.getElementById(buttonId);
+    if (!btn) return;
+
+    let isPressed = false;
+
+    const press = () => {
+        if (isPressed) return;
+        isPressed = true;
+        state.buttons[buttonIndex] = true;
+        btn.classList.add('pressed');
+    };
+
+    const release = () => {
+        if (!isPressed) return;
+        isPressed = false;
+        state.buttons[buttonIndex] = false;
+        btn.classList.remove('pressed');
+    };
+
+    btn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        press();
+    }, { passive: false });
+
+    btn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        release();
+    }, { passive: false });
+
+    btn.addEventListener('touchcancel', (e) => {
+        e.preventDefault();
+        release();
+    }, { passive: false });
+
+    // Also support mouse clicks for testing
+    btn.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        press();
+    });
+
+    btn.addEventListener('mouseup', (e) => {
+        e.preventDefault();
+        release();
+    });
+
+    btn.addEventListener('mouseleave', (e) => {
+        e.preventDefault();
+        release();
+    });
+}
+
 export function initSticks() {
     // Arena sticks
     setupStick('stick-left', 'knob-left', 0, 1);
@@ -90,4 +142,13 @@ export function initSticks() {
 
     // Menu stick (navigate, same axes 0,1)
     setupStick('stick-left-menu', 'knob-left-menu', 0, 1);
+
+    // Maze stick (single stick in center, left-stick movement, axes 0,1)
+    setupStick('stick-maze', 'knob-maze', 0, 1);
+
+    // Sequence buttons: A=Green(0), B=Red(1), X=Blue(2), Y=Yellow(3)
+    setupSequenceButton('btn-green', 0);   // A button
+    setupSequenceButton('btn-red', 1);     // B button
+    setupSequenceButton('btn-blue', 2);    // X button
+    setupSequenceButton('btn-yellow', 3);  // Y button
 }
