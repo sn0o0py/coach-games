@@ -1,105 +1,14 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Tank Controller</title>
-    <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-<div id="fullscreen-prompt">
-    <div class="icon">⛶</div>
-    <div class="prompt-text">TAP TO GO FULLSCREEN</div>
-    <div class="prompt-sub">For the best experience</div>
-</div>
-
-<div id="header">
-    <h1>TANK <span id="player-color"></span></h1>
-    <div id="status"><span class="dot connecting"></span> Connecting...</div>
-    <div id="scene-label"></div>
-    <div id="menu-btn" class="hidden" title="Menu">☰</div>
-    <div id="fs-toggle" title="Toggle fullscreen">⛶</div>
-</div>
-
-<div id="controls">
-    <!-- ===== ARENA MODE (default): two sticks + fire ===== -->
-    <div id="mode-arena">
-        <div id="sticks">
-            <div class="stick-container" id="stick-left">
-                <div class="stick-base"></div>
-                <div class="stick-knob" id="knob-left"></div>
-                <div class="stick-label">MOVE</div>
-            </div>
-            <div class="stick-container" id="stick-right">
-                <div class="stick-base"></div>
-                <div class="stick-knob" id="knob-right"></div>
-                <div class="stick-label">AIM</div>
-            </div>
-        </div>
-        <div id="fire-wrapper" style="display:flex;justify-content:center;margin-top:20px;width:100%;padding:0 10px;">
-            <div id="fire-btn" class="action-btn">FIRE</div>
-        </div>
-    </div>
-
-    <!-- ===== LOBBY MODE: one stick (move) + READY button ===== -->
-    <div id="mode-lobby" class="hidden">
-        <div id="sticks-lobby" style="display:flex;justify-content:center;width:100%;padding:0 20px;">
-            <div class="stick-container" id="stick-left-lobby">
-                <div class="stick-base"></div>
-                <div class="stick-knob" id="knob-left-lobby"></div>
-                <div class="stick-label">MOVE</div>
-            </div>
-        </div>
-        <div style="display:flex;justify-content:center;margin-top:30px;">
-            <div id="ready-btn" class="action-btn">READY</div>
-        </div>
-    </div>
-
-    <!-- ===== MENU MODE: one stick (navigate) + SELECT button ===== -->
-    <div id="mode-menu" class="hidden">
-        <div style="display:flex;justify-content:center;width:100%;padding:0 20px;">
-            <div class="stick-container" id="stick-left-menu">
-                <div class="stick-base"></div>
-                <div class="stick-knob" id="knob-left-menu"></div>
-                <div class="stick-label">NAVIGATE</div>
-            </div>
-        </div>
-        <div style="display:flex;justify-content:center;margin-top:30px;">
-            <div id="select-btn" class="action-btn">SELECT</div>
-        </div>
-    </div>
-
-    <!-- ===== MAZE MODE: single stick in center (movement only) ===== -->
-    <div id="mode-maze" class="hidden">
-        <div style="display:flex;justify-content:center;width:100%;padding:0 20px;">
-            <div class="stick-container" id="stick-maze">
-                <div class="stick-base"></div>
-                <div class="stick-knob" id="knob-maze"></div>
-                <div class="stick-label">MOVE</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== SEQUENCE MODE: four colored buttons ===== -->
-    <div id="mode-sequence" class="hidden">
-        <div id="memorization-message" class="memorization-message hidden">
-            <div class="memorization-text">MEMORIZATION TIME</div>
-        </div>
-        <div id="eliminated-message" class="eliminated-message hidden">
-            <div class="eliminated-text">ELIMINATED</div>
-        </div>
-        <div class="sequence-buttons">
-            <button id="btn-green" class="color-btn green">GREEN</button>
-            <button id="btn-blue" class="color-btn blue">BLUE</button>
-            <button id="btn-yellow" class="color-btn yellow">YELLOW</button>
-            <button id="btn-red" class="color-btn red">RED</button>
-        </div>
-    </div>
-</div>
-
-<script type="module" src="js/main.js"></script>
-
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>controller</title>
+    <script type="module" crossorigin src="assets/index-WP5F45EX.js"></script>
+    <link rel="stylesheet" crossorigin href="assets/index-Bo6zkhIC.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
