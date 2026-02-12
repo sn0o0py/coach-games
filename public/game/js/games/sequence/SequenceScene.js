@@ -33,7 +33,7 @@ class SequenceScene extends Phaser.Scene {
     create() {
         inputManager.setPhaserGamepad(this.input.gamepad);
         inputManager.broadcastScene(SCENE.SEQUENCE);
-        inputManager.broadcastState('countdown'); // Initial state
+        inputManager.broadcastState('getready'); // Initial state
 
         const w = this.scale.width;
         const h = this.scale.height;
@@ -59,7 +59,6 @@ class SequenceScene extends Phaser.Scene {
         this.gameState = GAME_STATE.COUNTDOWN;
         this.currentRound = 1;
         this.currentSequence = [];
-        this.countdownValue = 3;
         this.displayTimer = 0;
         this.inputTimer = 0;
         this.countdownTimer = 0;
@@ -182,13 +181,17 @@ class SequenceScene extends Phaser.Scene {
 
     startCountdown() {
         this.gameState = GAME_STATE.COUNTDOWN;
-        this.countdownValue = Math.ceil(settings.SEQUENCE_COUNTDOWN_TIME / 1000);
         this.countdownTimer = settings.SEQUENCE_COUNTDOWN_TIME;
         this.countdownText.setVisible(true);
-        this.countdownText.setText(this.countdownValue.toString());
+        this.countdownText.setText('GET READY');
+        this.countdownText.setFontSize('80px');
         
-        // Notify controller - countdown phase (buttons enabled but not active yet)
-        inputManager.broadcastState('countdown');
+        // Hide other timers during countdown
+        this.timerText.setVisible(false);
+        this.memorizationTimerText.setVisible(false);
+        
+        // Notify controller - get ready phase
+        inputManager.broadcastState('getready');
     }
 
     generateSequence(length) {
@@ -396,15 +399,22 @@ class SequenceScene extends Phaser.Scene {
         // State-specific updates
         if (this.gameState === GAME_STATE.COUNTDOWN) {
             this.countdownTimer -= delta;
-            const newValue = Math.ceil(this.countdownTimer / 1000);
-            if (newValue !== this.countdownValue && newValue > 0) {
-                this.countdownValue = newValue;
-                this.countdownText.setText(this.countdownValue.toString());
-            } else if (this.countdownTimer <= 0) {
-                this.countdownText.setText('GO!');
-                this.time.delayedCall(500, () => {
-                    this.displaySequence();
-                });
+            
+            // Show "GO" in the last 500ms, "GET READY" before that
+            if (this.countdownTimer <= 500 && this.countdownText.text !== 'GO') {
+                this.countdownText.setText('GO');
+                this.countdownText.setFontSize('120px');
+                // Notify controller - GO phase
+                inputManager.broadcastState('go');
+            } else if (this.countdownTimer > 500 && this.countdownText.text !== 'GET READY') {
+                this.countdownText.setText('GET READY');
+                this.countdownText.setFontSize('80px');
+                // Notify controller - get ready phase
+                inputManager.broadcastState('getready');
+            }
+            
+            if (this.countdownTimer <= 0) {
+                this.displaySequence();
             }
         } else if (this.gameState === GAME_STATE.DISPLAYING) {
             this.displayTimer -= delta;

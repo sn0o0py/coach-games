@@ -134,7 +134,7 @@ export function useSceneState() {
                     currentMode: MODE.SEQUENCE,
                     sceneLabel: 'Sequence Challenge',
                     showMenuButton: true,
-                    sequenceState: 'countdown',
+                    sequenceState: 'getready',
                     isEliminated: wasSequence ? (prev as SequenceSceneState).isEliminated : false,
                     ...base,
                 };
@@ -206,7 +206,7 @@ export function useSceneState() {
 
             return {
                 ...prev,
-                sequenceState: state as 'countdown' | 'memorizing' | 'input',
+                sequenceState: state as 'getready' | 'go' | 'memorizing' | 'input',
             };
         });
     }, []);

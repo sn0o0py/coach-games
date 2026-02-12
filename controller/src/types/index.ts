@@ -102,7 +102,7 @@ export interface SequenceSceneState extends BaseSceneState {
     currentMode: Mode;
     sceneLabel: 'Sequence Challenge';
     showMenuButton: true;
-    sequenceState: 'countdown' | 'memorizing' | 'input';
+    sequenceState: 'getready' | 'go' | 'memorizing' | 'input';
     isEliminated: boolean;
 }
 
