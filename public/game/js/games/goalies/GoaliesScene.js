@@ -624,48 +624,24 @@ class GoaliesScene extends Phaser.Scene {
 
     onPadDisconnected(pad) {
         const idx = pad.index;
-        const paddleIndex = this.paddles.findIndex(p => p.playerIndex === idx);
-        if (paddleIndex !== -1) {
-            const paddle = this.paddles[paddleIndex];
-            paddle.destroy();
-            if (paddle.goalGfx) paddle.goalGfx.destroy();
-            this.paddles.splice(paddleIndex, 1);
+        
+        // Only end game if the disconnected player was part of the game
+        if (!this.padIndices.includes(idx)) {
+            return; // Player wasn't in this game, ignore
         }
 
-        const goalIndex = this.goals.findIndex(g => g.playerIndex === idx);
-        if (goalIndex !== -1) {
-            this.goals.splice(goalIndex, 1);
+        // Immediately end game and return to menu when a player in the game disconnects
+        this.gameOver = true;
+        this.roundActive = false;
+        this.countdownActive = false;
+
+        // Stop ball
+        if (this.ball && this.ball.body) {
+            this.ball.body.setVelocity(0, 0);
         }
 
-        const padIndex = this.padIndices.indexOf(idx);
-        if (padIndex !== -1) {
-            this.padIndices.splice(padIndex, 1);
-        }
-
-        delete this.scores[idx];
-        if (this.hudEntries[idx]) {
-            this.hudEntries[idx].gfx.destroy();
-            this.hudEntries[idx].txt.destroy();
-            delete this.hudEntries[idx];
-        }
-
-        // If less than 3 players, end game
-        if (this.padIndices.length < 3) {
-            // Find winner from remaining players
-            let maxScore = -1;
-            let winner = null;
-            for (const idx of this.padIndices) {
-                if (this.scores[idx] > maxScore) {
-                    maxScore = this.scores[idx];
-                    winner = idx;
-                }
-            }
-            if (winner !== null) {
-                this.endGame(winner);
-            } else {
-                this.scene.start(SCENE.GOALIES_MENU);
-            }
-        }
+        // Return to menu immediately
+        this.scene.start(SCENE.GOALIES_MENU);
     }
 }
 
