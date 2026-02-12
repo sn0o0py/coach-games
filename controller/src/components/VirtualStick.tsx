@@ -113,12 +113,12 @@ export function VirtualStick({ label, onUpdate }: VirtualStickProps) {
     return (
         <div
             className="stick-container"
-            ref={baseRef}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             onTouchCancel={handleTouchCancel}
         >
+            <div className="stick-base" ref={baseRef}></div>
             <div
                 className="stick-knob"
                 ref={knobRef}

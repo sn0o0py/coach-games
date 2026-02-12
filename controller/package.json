@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "build-controller": "tsc -b && vite build --emptyOutDir --outDir ../public/controller2",
+    "build": "tsc -b && vite build --emptyOutDir --outDir ../public/controller",
+    "watch": "vite build --watch --emptyOutDir --outDir ../public/controller",
     "lint": "eslint .",
     "preview": "vite preview"
   },
