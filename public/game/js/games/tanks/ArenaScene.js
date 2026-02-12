@@ -79,13 +79,21 @@ class ArenaScene extends Phaser.Scene {
         inputManager.onConnect(this._wsConnectCb);
 
         // Resize handler
-        this.scale.on('resize', (gs) => this.onResize(gs));
+        this._resizeHandler = (gs) => this.onResize(gs);
+        if (this.scale) {
+            this.scale.on('resize', this._resizeHandler);
+        }
 
         // Clean up WS callbacks when scene shuts down
-        this.events.on('shutdown', () => {
-            if (this._wsConnectCb) inputManager.offConnect(this._wsConnectCb);
-            if (this._wsDisconnectCb) inputManager.offDisconnect(this._wsDisconnectCb);
-        });
+        if (this.events) {
+            this.events.on('shutdown', () => {
+                if (this._wsConnectCb) inputManager.offConnect(this._wsConnectCb);
+                if (this._wsDisconnectCb) inputManager.offDisconnect(this._wsDisconnectCb);
+                if (this.scale && this._resizeHandler) {
+                    this.scale.off('resize', this._resizeHandler);
+                }
+            });
+        }
 
         // Initialize pause manager
         initPauseManager(this, {

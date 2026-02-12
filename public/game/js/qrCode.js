@@ -21,7 +21,7 @@ export function loadControllerQR(scene, options = {}) {
         .then(r => r.json())
         .then(info => {
             // Scene may have changed while we were fetching
-            if (!scene.scene.isActive()) return;
+            if (!scene || !scene.scene || !scene.scene.isActive || !scene.scene.isActive()) return;
 
             const url = `http://${info.ip}:${info.port}/controller/`;
 
@@ -49,6 +49,10 @@ export function loadControllerQR(scene, options = {}) {
                     }
                 }
             }
+
+            // Double-check scene is still valid before adding objects
+            if (!scene || !scene.scene || !scene.scene.isActive || !scene.scene.isActive()) return;
+            if (!scene.textures || !scene.add) return;
 
             // Remove old texture if it exists (menu can be revisited)
             if (scene.textures.exists('qr_controller')) {

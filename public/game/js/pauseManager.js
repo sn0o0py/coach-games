@@ -22,12 +22,14 @@ export function initPauseManager(scene, options) {
     scene.pauseOverlay = null;
 
     // Cleanup on shutdown
-    scene.events.on('shutdown', () => {
-        if (scene.pauseOverlay) {
-            scene.pauseOverlay.forEach(obj => obj.destroy());
-            scene.pauseOverlay = null;
-        }
-    });
+    if (scene.events) {
+        scene.events.on('shutdown', () => {
+            if (scene.pauseOverlay) {
+                scene.pauseOverlay.forEach(obj => obj.destroy());
+                scene.pauseOverlay = null;
+            }
+        });
+    }
 
     scene.pauseGame = function() {
         this.isPaused = true;

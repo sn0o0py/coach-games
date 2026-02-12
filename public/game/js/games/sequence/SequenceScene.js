@@ -87,9 +87,11 @@ class SequenceScene extends Phaser.Scene {
         inputManager.onConnect(this._wsConnectCb);
 
         // Cleanup on shutdown
-        this.events.on('shutdown', () => {
-            if (this._wsConnectCb) inputManager.offConnect(this._wsConnectCb);
-        });
+        if (this.events) {
+            this.events.on('shutdown', () => {
+                if (this._wsConnectCb) inputManager.offConnect(this._wsConnectCb);
+            });
+        }
 
         // Initialize pause manager
         initPauseManager(this, {
