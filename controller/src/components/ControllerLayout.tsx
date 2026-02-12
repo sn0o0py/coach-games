@@ -7,6 +7,7 @@ import { LobbyMode } from './modes/LobbyMode';
 import { MenuMode } from './modes/MenuMode';
 import { MazeMode } from './modes/MazeMode';
 import { SequenceMode } from './modes/SequenceMode';
+import { GoaliesMode } from './modes/GoaliesMode';
 import { MODE, SCENE } from '../constants';
 import type { SceneState, SequenceSceneState } from '../types';
 
@@ -45,6 +46,8 @@ export function ControllerLayout({
                 );
             }
             return null;
+        case MODE.GOALIES:
+            return <GoaliesMode onAxisUpdate={onAxisUpdate} />;
         default:
             return <ArenaMode onAxisUpdate={onAxisUpdate} onButtonPress={onButtonPress} />;
     }

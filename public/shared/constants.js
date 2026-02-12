@@ -32,6 +32,10 @@ export const SCENE = {
     SEQUENCE:         'SequenceScene',
     SEQUENCE_WINNER:  'SequenceWinnerScene',
     SEQUENCE_SETTINGS: 'SequenceSettingsScene',
+    GOALIES_MENU:     'GoaliesMenuScene',
+    GOALIES:          'GoaliesScene',
+    GOALIES_WINNER:   'GoaliesWinnerScene',
+    GOALIES_SETTINGS: 'GoaliesSettingsScene',
 };
 
 // WebSocket endpoint paths

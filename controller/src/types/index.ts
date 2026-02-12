@@ -120,6 +120,34 @@ export interface SequenceSettingsSceneState extends BaseSceneState {
     showMenuButton: false;
 }
 
+export interface GoaliesMenuSceneState extends BaseSceneState {
+    type: typeof SCENE.GOALIES_MENU;
+    currentMode: Mode;
+    sceneLabel: 'Goalies Menu';
+    showMenuButton: false;
+}
+
+export interface GoaliesSceneState extends BaseSceneState {
+    type: typeof SCENE.GOALIES;
+    currentMode: Mode;
+    sceneLabel: 'Goalies';
+    showMenuButton: true;
+}
+
+export interface GoaliesWinnerSceneState extends BaseSceneState {
+    type: typeof SCENE.GOALIES_WINNER;
+    currentMode: Mode;
+    sceneLabel: 'Goalies Results';
+    showMenuButton: false;
+}
+
+export interface GoaliesSettingsSceneState extends BaseSceneState {
+    type: typeof SCENE.GOALIES_SETTINGS;
+    currentMode: Mode;
+    sceneLabel: 'Goalies Settings';
+    showMenuButton: false;
+}
+
 export interface UnknownSceneState extends BaseSceneState {
     type: 'unknown';
     currentMode: Mode;
@@ -144,6 +172,10 @@ export type SceneState =
     | SequenceSceneState
     | SequenceWinnerSceneState
     | SequenceSettingsSceneState
+    | GoaliesMenuSceneState
+    | GoaliesSceneState
+    | GoaliesWinnerSceneState
+    | GoaliesSettingsSceneState
     | UnknownSceneState;
 
 export interface ControllerState {

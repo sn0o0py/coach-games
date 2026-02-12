@@ -92,5 +92,34 @@ export function generateAllTextures(scene) {
     g.fillCircle(4, 4, 4);
     g.generateTexture('particle_orange', 8, 8);
 
+    // Goalies game textures
+    // Paddles for each player
+    for (let i = 0; i < 4; i++) {
+        const color = getPlayerColor(i);
+        g.clear();
+        g.fillStyle(color, 1);
+        g.fillRoundedRect(0, 0, 80, 20, 4);
+        g.fillStyle(darken(color, 0.3), 1);
+        g.fillRect(0, 0, 80, 4);
+        g.generateTexture('paddle_' + i, 80, 20);
+    }
+    for (let i = 0; i < 20; i++) {
+        const color = getPlayerColor(100 + i);
+        g.clear();
+        g.fillStyle(color, 1);
+        g.fillRoundedRect(0, 0, 80, 20, 4);
+        g.fillStyle(darken(color, 0.3), 1);
+        g.fillRect(0, 0, 80, 4);
+        g.generateTexture('paddle_' + (100 + i), 80, 20);
+    }
+
+    // Ball
+    g.clear();
+    g.fillStyle(0xffffff, 1);
+    g.fillCircle(12, 12, 12);
+    g.lineStyle(2, 0x000000, 1);
+    g.strokeCircle(12, 12, 12);
+    g.generateTexture('ball', 24, 24);
+
     g.destroy();
 }

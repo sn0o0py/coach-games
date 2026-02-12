@@ -16,6 +16,10 @@ import { SequenceMenuScene } from './games/sequence/SequenceMenuScene.js';
 import { SequenceScene } from './games/sequence/SequenceScene.js';
 import { SequenceWinnerScene } from './games/sequence/SequenceWinnerScene.js';
 import { SequenceSettingsScene } from './games/sequence/SequenceSettingsScene.js';
+import { GoaliesMenuScene } from './games/goalies/GoaliesMenuScene.js';
+import { GoaliesScene } from './games/goalies/GoaliesScene.js';
+import { GoaliesWinnerScene } from './games/goalies/GoaliesWinnerScene.js';
+import { GoaliesSettingsScene } from './games/goalies/GoaliesSettingsScene.js';
 
 const config = {
     type: Phaser.AUTO,
@@ -38,7 +42,7 @@ const config = {
     input: {
         gamepad: true
     },
-    scene: [GameSelectionScene, TankMenuScene, TeamLobbyScene, ArenaScene, WinnerScene, TankSettingsScene, MazeMenuScene, MazeScene, MazeWinnerScene, MazeSettingsScene, SequenceMenuScene, SequenceScene, SequenceWinnerScene, SequenceSettingsScene]
+    scene: [GameSelectionScene, TankMenuScene, TeamLobbyScene, ArenaScene, WinnerScene, TankSettingsScene, MazeMenuScene, MazeScene, MazeWinnerScene, MazeSettingsScene, SequenceMenuScene, SequenceScene, SequenceWinnerScene, SequenceSettingsScene, GoaliesMenuScene, GoaliesScene, GoaliesWinnerScene, GoaliesSettingsScene]
 };
 
 const game = new Phaser.Game(config);

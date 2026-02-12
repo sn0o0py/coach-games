@@ -33,7 +33,8 @@ class GameSelectionScene extends Phaser.Scene {
         this.games = [
             { label: 'Tanks', desc: 'Tank arena battles' },
             { label: 'Maze', desc: 'Race to the exit' },
-            { label: 'Sequence Challenge', desc: 'Memorize and repeat the pattern' }
+            { label: 'Sequence Challenge', desc: 'Memorize and repeat the pattern' },
+            { label: 'Goalies', desc: 'Defend your goal from the ball' }
         ];
         this.selectedIndex = 0;
         this.gameTexts = [];
@@ -143,6 +144,9 @@ class GameSelectionScene extends Phaser.Scene {
         } else if (this.selectedIndex === 2) {
             // Sequence Challenge
             this.scene.start(SCENE.SEQUENCE_MENU);
+        } else if (this.selectedIndex === 3) {
+            // Goalies
+            this.scene.start(SCENE.GOALIES_MENU);
         }
     }
 }

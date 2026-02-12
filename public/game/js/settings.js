@@ -24,7 +24,13 @@ export const settings = {
     SEQUENCE_INPUT_TIME: 10000,  // time limit for players to input sequence (ms)
     SEQUENCE_INITIAL_LENGTH: 4,   // starting sequence length
     SEQUENCE_COUNTDOWN_TIME: 3000, // countdown duration before showing sequence (ms)
-    SEQUENCE_COLORS: [0x00ff00, 0xff0000, 0x0088ff, 0xffff00] // Green, Red, Blue, Yellow (A, B, X, Y)
+    SEQUENCE_COLORS: [0x00ff00, 0xff0000, 0x0088ff, 0xffff00], // Green, Red, Blue, Yellow (A, B, X, Y)
+    GOALIES_BALL_SPEED: 400,      // ball speed in pixels/second
+    GOALIES_PADDLE_WIDTH: 80,     // paddle width in pixels
+    GOALIES_WIN_TARGET: 10,       // points needed to win
+    GOALIES_ROUND_COUNTDOWN: 2000, // countdown time between rounds (ms)
+    GOALIES_PADDLE_SPEED: 300,      // paddle movement speed in pixels/second
+    GOALIES_BALL_SPEEDUP_RATIO: 1.02 // ball speed multiplier per paddle hit
 };
 
 // Re-export for convenient destructuring
@@ -50,7 +56,13 @@ export const {
     SEQUENCE_INPUT_TIME,
     SEQUENCE_INITIAL_LENGTH,
     SEQUENCE_COUNTDOWN_TIME,
-    SEQUENCE_COLORS
+    SEQUENCE_COLORS,
+    GOALIES_BALL_SPEED,
+    GOALIES_PADDLE_WIDTH,
+    GOALIES_WIN_TARGET,
+    GOALIES_ROUND_COUNTDOWN,
+    GOALIES_PADDLE_SPEED,
+    GOALIES_BALL_SPEEDUP_RATIO
 } = settings;
 
 // ----- Settings persistence (localStorage) -----
@@ -114,6 +126,32 @@ export function loadSequenceSettings() {
     } catch (e) { /* ignore corrupt data */ }
 }
 
+export function saveGoaliesSettings() {
+    const data = {
+        GOALIES_BALL_SPEED: settings.GOALIES_BALL_SPEED,
+        GOALIES_PADDLE_WIDTH: settings.GOALIES_PADDLE_WIDTH,
+        GOALIES_WIN_TARGET: settings.GOALIES_WIN_TARGET,
+        GOALIES_ROUND_COUNTDOWN: settings.GOALIES_ROUND_COUNTDOWN,
+        GOALIES_PADDLE_SPEED: settings.GOALIES_PADDLE_SPEED,
+        GOALIES_BALL_SPEEDUP_RATIO: settings.GOALIES_BALL_SPEEDUP_RATIO
+    };
+    localStorage.setItem('goaliesSettings', JSON.stringify(data));
+}
+
+export function loadGoaliesSettings() {
+    try {
+        const raw = localStorage.getItem('goaliesSettings');
+        if (!raw) return;
+        const d = JSON.parse(raw);
+        if (d.GOALIES_BALL_SPEED !== undefined) settings.GOALIES_BALL_SPEED = d.GOALIES_BALL_SPEED;
+        if (d.GOALIES_PADDLE_WIDTH !== undefined) settings.GOALIES_PADDLE_WIDTH = d.GOALIES_PADDLE_WIDTH;
+        if (d.GOALIES_WIN_TARGET !== undefined) settings.GOALIES_WIN_TARGET = d.GOALIES_WIN_TARGET;
+        if (d.GOALIES_ROUND_COUNTDOWN !== undefined) settings.GOALIES_ROUND_COUNTDOWN = d.GOALIES_ROUND_COUNTDOWN;
+        if (d.GOALIES_PADDLE_SPEED !== undefined) settings.GOALIES_PADDLE_SPEED = d.GOALIES_PADDLE_SPEED;
+        if (d.GOALIES_BALL_SPEEDUP_RATIO !== undefined) settings.GOALIES_BALL_SPEEDUP_RATIO = d.GOALIES_BALL_SPEEDUP_RATIO;
+    } catch (e) { /* ignore corrupt data */ }
+}
+
 export function loadSettings() {
     try {
         const raw = localStorage.getItem('tankArenaSettings');
@@ -138,3 +176,4 @@ export function loadSettings() {
 loadSettings();
 loadMazeSettings();
 loadSequenceSettings();
+loadGoaliesSettings();

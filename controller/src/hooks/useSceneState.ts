@@ -154,6 +154,38 @@ export function useSceneState() {
                     showMenuButton: false,
                     ...base,
                 };
+            } else if (sceneName === SCENE.GOALIES_MENU) {
+                newState = {
+                    type: SCENE.GOALIES_MENU,
+                    currentMode: MODE.MENU,
+                    sceneLabel: 'Goalies Menu',
+                    showMenuButton: false,
+                    ...base,
+                };
+            } else if (sceneName === SCENE.GOALIES) {
+                newState = {
+                    type: SCENE.GOALIES,
+                    currentMode: MODE.GOALIES,
+                    sceneLabel: 'Goalies',
+                    showMenuButton: true,
+                    ...base,
+                };
+            } else if (sceneName === SCENE.GOALIES_WINNER) {
+                newState = {
+                    type: SCENE.GOALIES_WINNER,
+                    currentMode: MODE.MENU,
+                    sceneLabel: 'Goalies Results',
+                    showMenuButton: false,
+                    ...base,
+                };
+            } else if (sceneName === SCENE.GOALIES_SETTINGS) {
+                newState = {
+                    type: SCENE.GOALIES_SETTINGS,
+                    currentMode: MODE.MENU,
+                    sceneLabel: 'Goalies Settings',
+                    showMenuButton: false,
+                    ...base,
+                };
             } else {
                 newState = {
                     type: 'unknown',

@@ -4,7 +4,10 @@
   "private": true,
   "scripts": {
     "start": "node server/index.js",
-    "start:electron": "electron ."
+    "start:electron": "electron .",
+    "build:controller": "cd controller && npm run build",
+    "build:electron": "npm run build:controller && electron-builder --win",
+    "build:electron:dir": "npm run build:controller && electron-builder --win --dir"
   },
   "main": "electron/main.js",
   "dependencies": {
@@ -13,6 +16,36 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
-    "electron": "^40.2.1"
+    "electron": "^40.2.1",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.tankarena.app",
+    "productName": "Tank Arena",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "electron/**/*",
+      "server/**/*",
+      "public/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
   }
 }
